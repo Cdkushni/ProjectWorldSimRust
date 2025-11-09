@@ -63,7 +63,7 @@ impl DungeonMaster {
             event_bus,
             metrics: Arc::new(RwLock::new(WorldMetrics::default())),
             story_events,
-            boredom_threshold: 0.3,
+            boredom_threshold: 0.1, // Lowered from 0.3 for more frequent events
         }
     }
 

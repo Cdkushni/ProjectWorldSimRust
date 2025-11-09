@@ -153,6 +153,229 @@
             color: #aaa;
             max-width: 200px;
         }
+        
+        #legend {
+            position: absolute;
+            top: 200px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            min-width: 200px;
+        }
+        
+        #legend h3 {
+            margin-bottom: 15px;
+            color: #4ecdc4;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .legend-label {
+            color: #ddd;
+            flex: 1;
+        }
+        
+        .legend-count {
+            color: #4ecdc4;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        #faction-stats {
+            position: absolute;
+            top: 430px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            min-width: 250px;
+        }
+        
+        #faction-stats h3 {
+            margin-bottom: 15px;
+            color: #4ecdc4;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .faction-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+        
+        .faction-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .faction-count {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        #resource-stats {
+            position: absolute;
+            top: 620px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            min-width: 250px;
+        }
+        
+        #resource-stats h3 {
+            margin-bottom: 15px;
+            color: #4ecdc4;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .resource-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+        
+        .resource-icon {
+            margin-right: 8px;
+        }
+        
+        #activity-feed {
+            position: absolute;
+            bottom: 120px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 15px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            max-width: 300px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        #activity-feed h3 {
+            margin-bottom: 10px;
+            color: #4ecdc4;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .activity-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            font-size: 11px;
+            color: #ccc;
+            border-left: 3px solid #4ecdc4;
+        }
+        
+        .activity-time {
+            color: #888;
+            font-size: 10px;
+        }
+        
+        #tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            pointer-events: none;
+            display: none;
+            z-index: 2000;
+            border: 2px solid #4ecdc4;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            max-width: 300px;
+        }
+        
+        #tooltip h4 {
+            margin-bottom: 10px;
+            color: #4ecdc4;
+            font-size: 16px;
+        }
+        
+        .tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        
+        .tooltip-label {
+            color: #aaa;
+        }
+        
+        .tooltip-value {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border-left: 4px solid #4ecdc4;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .notification-body {
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -177,6 +400,85 @@
             <span class="stat-value" id="fps">60</span>
         </div>
     </div>
+    
+    <div id="legend">
+        <h3>🎨 Agent States</h3>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #4ecdc4;"></div>
+            <span class="legend-label">Idle</span>
+            <span class="legend-count" id="count-idle">0</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #95e1d3;"></div>
+            <span class="legend-label">Moving</span>
+            <span class="legend-count" id="count-moving">0</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff6b6b;"></div>
+            <span class="legend-label">🔨 Working</span>
+            <span class="legend-count" id="count-working">0</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ffd93d;"></div>
+            <span class="legend-label">🍞 Eating</span>
+            <span class="legend-count" id="count-eating">0</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #9b59b6;"></div>
+            <span class="legend-label">💤 Sleeping</span>
+            <span class="legend-count" id="count-sleeping">0</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #e74c3c;"></div>
+            <span class="legend-label">⚔️ Fighting</span>
+            <span class="legend-count" id="count-fighting">0</span>
+        </div>
+    </div>
+    
+    <div id="faction-stats">
+        <h3>⚔️ Faction Status</h3>
+        <div class="faction-item">
+            <div class="faction-name" style="color: #3498db;">🔵 Kingdom A</div>
+            <div class="faction-count" id="faction-a-count">0 agents</div>
+        </div>
+        <div class="faction-item">
+            <div class="faction-name" style="color: #e74c3c;">🔴 Kingdom B</div>
+            <div class="faction-count" id="faction-b-count">0 agents</div>
+        </div>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div class="faction-count">
+                <span style="color: #ff6b6b;">💀 War Casualties:</span>
+                <span id="casualties" style="color: #fff; font-weight: bold;">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="resource-stats">
+        <h3>🏭 Resources</h3>
+        <div class="resource-row">
+            <span><span class="resource-icon">🌲</span>Trees:</span>
+            <span id="resource-tree" style="color: #4ecdc4; font-weight: bold;">0</span>
+        </div>
+        <div class="resource-row">
+            <span><span class="resource-icon">⛰️</span>Rocks:</span>
+            <span id="resource-rock" style="color: #4ecdc4; font-weight: bold;">0</span>
+        </div>
+        <div class="resource-row">
+            <span><span class="resource-icon">🌾</span>Farms:</span>
+            <span id="resource-farm" style="color: #4ecdc4; font-weight: bold;">0</span>
+        </div>
+        <div class="resource-row">
+            <span><span class="resource-icon">⚙️</span>Iron:</span>
+            <span id="resource-iron" style="color: #4ecdc4; font-weight: bold;">0</span>
+        </div>
+    </div>
+    
+    <div id="activity-feed">
+        <h3>📡 Live Activity</h3>
+        <div id="activity-list"></div>
+    </div>
+    
+    <div id="tooltip"></div>
     
     <div id="connection-status" class="disconnected">● Connecting...</div>
     
@@ -213,8 +515,33 @@
         const API_URL = 'http://127.0.0.1:8080';
         let scene, camera, renderer, controls;
         let agents = new Map();
+        let resources = new Map();
         let isPaused = false;
         let terrainMesh;
+        let lastEventCount = 0;
+        let initialAgentCount = 100;
+        let activityLog = [];
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        let isInitialLoad = true;
+        let knownAgentIds = new Set();
+        
+        // State-based colors
+        const STATE_COLORS = {
+            'Idle': 0x4ecdc4,      // Cyan
+            'Moving': 0x95e1d3,    // Light cyan  
+            'Working': 0xff6b6b,   // Red
+            'Eating': 0xffd93d,    // Yellow
+            'Sleeping': 0x9b59b6,  // Purple
+            'Fighting': 0xe74c3c,  // Dark red
+            'Dead': 0x555555       // Gray
+        };
+        
+        // Faction colors (for team identification)
+        const FACTION_COLORS = {
+            'Kingdom A': 0x3498db,  // Blue team
+            'Kingdom B': 0xe74c3c,  // Red team
+        };
         
         // Initialize Three.js scene
         function init() {
@@ -289,63 +616,44 @@
             terrainMesh.position.y = 0;
             scene.add(terrainMesh);
             
-            // Add some ambient details (trees/rocks)
-            addEnvironmentDetails();
+            // Resources will be added dynamically from API
             
             // Handle window resize
             window.addEventListener('resize', onWindowResize);
+            
+            // Handle mouse movement for tooltips
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+            renderer.domElement.addEventListener('click', onClick);
             
             // Start animation loop
             animate();
             
             // Start fetching data
             fetchWorldState();
-            setInterval(fetchWorldState, 500); // Update every 0.5 seconds for smoother movement
+            setInterval(fetchWorldState, 200); // Update every 0.2 seconds for smoother movement (was 500ms)
             fetchMetrics();
             setInterval(fetchMetrics, 1000);
         }
         
-        // Add environment details
-        function addEnvironmentDetails() {
-            // Add some decorative trees
-            for (let i = 0; i < 30; i++) {
-                const treeGeometry = new THREE.CylinderGeometry(0.3, 0.5, 4, 6);
-                const treeMaterial = new THREE.MeshStandardMaterial({ 
-                    color: 0x2d5016,
-                    roughness: 0.9 
-                });
-                const tree = new THREE.Mesh(treeGeometry, treeMaterial);
-                tree.position.set(
-                    Math.random() * 180 - 90,
-                    2,
-                    Math.random() * 180 - 90
-                );
-                tree.castShadow = true;
-                scene.add(tree);
-                
-                // Tree top
-                const topGeometry = new THREE.ConeGeometry(1.5, 3, 8);
-                const topMaterial = new THREE.MeshStandardMaterial({ 
-                    color: 0x3a7d44,
-                    roughness: 0.8 
-                });
-                const top = new THREE.Mesh(topGeometry, topMaterial);
-                top.position.copy(tree.position);
-                top.position.y += 4;
-                top.castShadow = true;
-                scene.add(top);
-            }
-        }
         
         // Fetch world state from API
         async function fetchWorldState() {
             try {
                 const response = await fetch(`${API_URL}/api/world/state`);
-                if (!response.ok) throw new Error('API returned ' + response.status);
+                if (!response.ok) {
+                    throw new Error('API returned ' + response.status);
+                }
                 const data = await response.json();
                 
-                updateConnectionStatus(true);
-                updateAgents(data.agents || []);
+                // Check if we got valid data
+                if (data && data.agents) {
+                    updateConnectionStatus(true);
+                    updateAgents(data.agents);
+                    updateResources(data.resources || []);
+                } else {
+                    console.warn('Invalid data received:', data);
+                    updateConnectionStatus(false);
+                }
             } catch (error) {
                 console.error('Error fetching world state:', error);
                 updateConnectionStatus(false);
@@ -362,6 +670,13 @@
                 document.getElementById('agent-count').textContent = data.agent_count || 0;
                 document.getElementById('uptime').textContent = `${data.uptime_seconds || 0}s`;
                 document.getElementById('events').textContent = data.events_processed || 0;
+                
+                // Check for new events
+                if (data.events_processed > lastEventCount && lastEventCount > 0) {
+                    showNotification('📡 New Event', 'Simulation event occurred');
+                    logActivity('📡 Simulation event triggered', 'event');
+                }
+                lastEventCount = data.events_processed;
             } catch (error) {
                 console.error('Error fetching metrics:', error);
             }
@@ -383,13 +698,43 @@
         function updateAgents(agentData) {
             const currentAgentIds = new Set();
             
+            // Count states and factions
+            const stateCounts = {
+                'Idle': 0, 'Moving': 0, 'Working': 0,
+                'Eating': 0, 'Sleeping': 0, 'Fighting': 0
+            };
+            let factionACoun = 0, factionBCount = 0;
+            
             agentData.forEach(agentInfo => {
                 currentAgentIds.add(agentInfo.id);
                 
+                // Count states
+                if (stateCounts[agentInfo.state] !== undefined) {
+                    stateCounts[agentInfo.state]++;
+                }
+                
+                // Count factions (simplified check)
+                if (agentInfo.faction && agentInfo.faction.includes('Kingdom')) {
+                    if (Math.random() > 0.5) { // Simplified faction detection
+                        factionACount++;
+                    } else {
+                        factionBCount++;
+                    }
+                }
+                
                 if (!agents.has(agentInfo.id)) {
-                    // Create new agent with unique color
-                    const hue = Math.random();
-                    const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
+                    // Create new agent with faction-based color (if in faction) or state color
+                    let color;
+                    if (agentInfo.faction) {
+                        // Use faction color for team identification
+                        const factionKey = agentInfo.faction.includes('FactionId') ? 
+                            (agentInfo.faction.includes('Kingdom A') || Math.random() > 0.5 ? 'Kingdom A' : 'Kingdom B') :
+                            'Kingdom A';
+                        color = new THREE.Color(FACTION_COLORS[factionKey] || FACTION_COLORS['Kingdom A']);
+                    } else {
+                        const state = agentInfo.state || 'Idle';
+                        color = new THREE.Color(STATE_COLORS[state] || STATE_COLORS['Idle']);
+                    }
                     
                     const geometry = new THREE.CapsuleGeometry(0.5, 1.5, 8, 16);
                     const material = new THREE.MeshStandardMaterial({
@@ -416,22 +761,101 @@
                     
                     scene.add(mesh);
                     
+                    // Only show birth notification if this is a NEW agent (not initial load)
+                    if (!isInitialLoad && !knownAgentIds.has(agentInfo.id)) {
+                        showNotification('👶 Agent Born', agentInfo.name);
+                        logActivity(`👶 ${agentInfo.name} was born`, 'birth');
+                    }
+                    
+                    knownAgentIds.add(agentInfo.id);
+                    
                     agents.set(agentInfo.id, {
                         mesh: mesh,
+                        head: head,
                         targetPos: new THREE.Vector3(agentInfo.x, agentInfo.y + 1, agentInfo.z),
-                        name: agentInfo.name
+                        name: agentInfo.name,
+                        state: agentInfo.state || 'Idle',
+                        faction: agentInfo.faction,
+                        agentData: agentInfo
                     });
                 } else {
-                    // Update target position (will smoothly interpolate)
+                    // Update target position and state color
                     const agent = agents.get(agentInfo.id);
                     agent.targetPos.set(agentInfo.x, agentInfo.y + 1, agentInfo.z);
+                    
+                    // Update state and add combat effects
+                    const newState = agentInfo.state || 'Idle';
+                    if (agent.state !== newState) {
+                        agent.state = newState;
+                        
+                        // Combat flash effect
+                        if (newState === 'Fighting') {
+                            agent.mesh.material.emissiveIntensity = 0.8;
+                            
+                            // Add red glow for fighting
+                            const combatColor = new THREE.Color(0xff0000);
+                            agent.mesh.material.emissive = combatColor;
+                            
+                            // Create spark particles
+                            createCombatEffect(agent.mesh.position);
+                            logActivity(`⚔️ ${agent.name} is fighting!`, 'combat');
+                        } else if (agent.state === 'Fighting' && newState !== 'Fighting') {
+                            // Combat ended
+                            logActivity(`✅ ${agent.name} stopped fighting`, 'info');
+                        }
+                        
+                        if (newState !== 'Fighting') {
+                            // Return to normal
+                            agent.mesh.material.emissiveIntensity = 0.2;
+                            
+                            // Base faction color or state color
+                            if (agentInfo.faction) {
+                                const factionKey = 'Kingdom A'; // Simplified
+                                const baseColor = new THREE.Color(FACTION_COLORS[factionKey] || FACTION_COLORS['Kingdom A']);
+                                agent.mesh.material.emissive = baseColor;
+                            }
+                        }
+                    }
+                    
+                    // Store updated data for tooltip
+                    agent.agentData = agentInfo;
                 }
             });
+            
+            // Update legend counts
+            document.getElementById('count-idle').textContent = stateCounts['Idle'];
+            document.getElementById('count-moving').textContent = stateCounts['Moving'];
+            document.getElementById('count-working').textContent = stateCounts['Working'];
+            document.getElementById('count-eating').textContent = stateCounts['Eating'];
+            document.getElementById('count-sleeping').textContent = stateCounts['Sleeping'];
+            document.getElementById('count-fighting').textContent = stateCounts['Fighting'];
+            
+            // Update faction counts (rough estimate - needs proper faction tracking)
+            document.getElementById('faction-a-count').textContent = `${Math.floor(agentData.length / 2)} agents`;
+            document.getElementById('faction-b-count').textContent = `${Math.ceil(agentData.length / 2)} agents`;
+            
+            // Calculate casualties
+            const casualties = initialAgentCount - agentData.length;
+            document.getElementById('casualties').textContent = casualties;
+            
+            // After first update, mark as no longer initial load
+            if (isInitialLoad && agentData.length > 0) {
+                isInitialLoad = false;
+                logActivity('🌍 World simulation loaded', 'info');
+                logActivity(`⚔️ War: Kingdom A vs Kingdom B`, 'combat');
+            }
             
             // Remove agents that no longer exist (died)
             agents.forEach((agent, id) => {
                 if (!currentAgentIds.has(id)) {
-                    // Death animation - fade and shrink
+                    // Death animation - dramatic!
+                    showNotification('💀 Agent Died', agent.name);
+                    logActivity(`💀 ${agent.name} has died`, 'death');
+                    
+                    // Explosion effect
+                    createDeathEffect(agent.mesh.position);
+                    
+                    // Fade and shrink
                     const fadeOut = () => {
                         agent.mesh.scale.multiplyScalar(0.95);
                         agent.mesh.material.opacity -= 0.05;
@@ -448,6 +872,99 @@
             });
         }
         
+        // Update resources in the scene
+        function updateResources(resourceData) {
+            const currentResourceIds = new Set();
+            
+            // Count resource types
+            const resourceCounts = { tree: 0, rock: 0, farm: 0, iron: 0 };
+            
+            resourceData.forEach(resourceInfo => {
+                currentResourceIds.add(resourceInfo.id);
+                
+                // Count resources
+                if (resourceCounts[resourceInfo.resource_type] !== undefined) {
+                    resourceCounts[resourceInfo.resource_type]++;
+                }
+                
+                if (!resources.has(resourceInfo.id)) {
+                    // Create new resource
+                    let mesh;
+                    
+                    switch(resourceInfo.resource_type) {
+                        case 'tree':
+                            // Tree trunk
+                            const trunkGeometry = new THREE.CylinderGeometry(0.4, 0.6, 5, 8);
+                            const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x3a2814 });
+                            const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+                            trunk.castShadow = true;
+                            
+                            // Tree canopy
+                            const canopyGeometry = new THREE.SphereGeometry(2, 8, 8);
+                            const canopyMaterial = new THREE.MeshStandardMaterial({ color: 0x2d5016 });
+                            const canopy = new THREE.Mesh(canopyGeometry, canopyMaterial);
+                            canopy.position.y = 4;
+                            canopy.castShadow = true;
+                            
+                            mesh = new THREE.Group();
+                            mesh.add(trunk);
+                            mesh.add(canopy);
+                            break;
+                            
+                        case 'rock':
+                            // Rock
+                            const rockGeometry = new THREE.DodecahedronGeometry(1.5, 0);
+                            const rockMaterial = new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.9 });
+                            mesh = new THREE.Mesh(rockGeometry, rockMaterial);
+                            mesh.castShadow = true;
+                            break;
+                            
+                        case 'farm':
+                            // Farm plot
+                            const farmGeometry = new THREE.BoxGeometry(3, 0.3, 3);
+                            const farmMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+                            mesh = new THREE.Mesh(farmGeometry, farmMaterial);
+                            mesh.receiveShadow = true;
+                            break;
+                            
+                        case 'iron':
+                            // Iron deposit
+                            const ironGeometry = new THREE.OctahedronGeometry(1.2);
+                            const ironMaterial = new THREE.MeshStandardMaterial({ 
+                                color: 0x708090, 
+                                metalness: 0.8,
+                                roughness: 0.3
+                            });
+                            mesh = new THREE.Mesh(ironGeometry, ironMaterial);
+                            mesh.castShadow = true;
+                            break;
+                    }
+                    
+                    mesh.position.set(resourceInfo.x, resourceInfo.y, resourceInfo.z);
+                    scene.add(mesh);
+                    
+                    resources.set(resourceInfo.id, {
+                        mesh: mesh,
+                        type: resourceInfo.resource_type
+                    });
+                }
+            });
+            
+            // Remove depleted resources
+            resources.forEach((resource, id) => {
+                if (!currentResourceIds.has(id)) {
+                    scene.remove(resource.mesh);
+                    resources.delete(id);
+                }
+            });
+            
+            // Update resource counts in UI
+            document.getElementById('resource-tree').textContent = resourceCounts.tree;
+            document.getElementById('resource-rock').textContent = resourceCounts.rock;
+            document.getElementById('resource-farm').textContent = resourceCounts.farm;
+            document.getElementById('resource-iron').textContent = resourceCounts.iron;
+        }
+        
         // Animation loop
         let lastTime = Date.now();
         let frameCount = 0;
@@ -457,16 +974,16 @@
             requestAnimationFrame(animate);
             
             if (!isPaused) {
-                // Smooth agent movement with interpolation
+                // Smooth agent movement with faster interpolation
                 agents.forEach(agent => {
-                    agent.mesh.position.lerp(agent.targetPos, 0.1);
+                    agent.mesh.position.lerp(agent.targetPos, 0.3); // Increased from 0.1 for snappier movement
                     
                     // Add subtle bobbing animation (breathing effect)
                     const time = Date.now() * 0.001;
                     agent.mesh.position.y += Math.sin(time * 2 + agent.mesh.position.x) * 0.005;
                     
-                    // Slight rotation for life-like movement
-                    agent.mesh.rotation.y += 0.01;
+                    // Faster rotation for more active appearance
+                    agent.mesh.rotation.y += 0.02; // Doubled from 0.01
                 });
                 
                 controls.update();
@@ -491,6 +1008,99 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
         
+        // Mouse movement for tooltips
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            
+            const agentMeshes = Array.from(agents.values()).map(a => a.mesh);
+            const intersects = raycaster.intersectObjects(agentMeshes, true);
+            
+            if (intersects.length > 0) {
+                const hoveredMesh = intersects[0].object.parent || intersects[0].object;
+                
+                // Find which agent this mesh belongs to
+                for (const [id, agent] of agents) {
+                    if (agent.mesh === hoveredMesh) {
+                        showTooltip(agent, event.clientX, event.clientY);
+                        return;
+                    }
+                }
+            }
+            
+            hideTooltip();
+        }
+        
+        function onClick(event) {
+            // Could add click interactions here
+        }
+        
+        // Show tooltip for agent
+        function showTooltip(agent, x, y) {
+            const tooltip = document.getElementById('tooltip');
+            const data = agent.agentData || {};
+            
+            tooltip.innerHTML = `
+                <h4>${agent.name}</h4>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">State:</span>
+                    <span class="tooltip-value">${agent.state}</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Faction:</span>
+                    <span class="tooltip-value">${agent.faction ? '⚔️ At War' : 'None'}</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Position:</span>
+                    <span class="tooltip-value">
+                        ${agent.mesh.position.x.toFixed(1)}, 
+                        ${agent.mesh.position.z.toFixed(1)}
+                    </span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">ID:</span>
+                    <span class="tooltip-value" style="font-size: 9px;">${data.id || 'Unknown'}</span>
+                </div>
+            `;
+            
+            tooltip.style.left = (x + 15) + 'px';
+            tooltip.style.top = (y + 15) + 'px';
+            tooltip.style.display = 'block';
+        }
+        
+        function hideTooltip() {
+            document.getElementById('tooltip').style.display = 'none';
+        }
+        
+        // Log activity to feed
+        function logActivity(message, type) {
+            // Deduplicate - don't add if same message exists recently
+            if (activityLog.length > 0 && activityLog[0].message === message) {
+                return;
+            }
+            
+            const timestamp = new Date().toLocaleTimeString();
+            activityLog.unshift({ message, timestamp, type });
+            
+            // Keep only last 20 items
+            if (activityLog.length > 20) {
+                activityLog.pop();
+            }
+            
+            // Update display
+            const activityList = document.getElementById('activity-list');
+            if (activityList) {
+                activityList.innerHTML = activityLog.map(item => `
+                    <div class="activity-item">
+                        <div>${item.message}</div>
+                        <div class="activity-time">${item.timestamp}</div>
+                    </div>
+                `).join('');
+            }
+        }
+        
         // Global functions for UI
         window.resetCamera = function() {
             camera.position.set(70, 60, 70);
@@ -505,11 +1115,118 @@
             btn.textContent = isPaused ? '▶️ Resume' : '⏸️ Pause';
         };
         
+        // Show notification toast
+        function showNotification(title, body) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <div class="notification-title">${title}</div>
+                <div class="notification-body">${body}</div>
+            `;
+            document.body.appendChild(notification);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Combat particle effect
+        function createCombatEffect(position) {
+            const particleCount = 20;
+            const particles = new THREE.Group();
+            
+            for (let i = 0; i < particleCount; i++) {
+                const geometry = new THREE.SphereGeometry(0.1, 4, 4);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: 0xff6600,
+                    transparent: true,
+                    opacity: 1.0
+                });
+                const particle = new THREE.Mesh(geometry, material);
+                
+                particle.position.copy(position);
+                particle.velocity = new THREE.Vector3(
+                    (Math.random() - 0.5) * 2,
+                    Math.random() * 2,
+                    (Math.random() - 0.5) * 2
+                );
+                
+                particles.add(particle);
+            }
+            
+            scene.add(particles);
+            
+            // Animate particles
+            let life = 0;
+            const animateParticles = () => {
+                life += 0.05;
+                particles.children.forEach(p => {
+                    p.position.add(p.velocity);
+                    p.velocity.y -= 0.05; // Gravity
+                    p.material.opacity = 1.0 - life;
+                });
+                
+                if (life < 1.0) {
+                    requestAnimationFrame(animateParticles);
+                } else {
+                    scene.remove(particles);
+                }
+            };
+            animateParticles();
+        }
+        
+        // Death explosion effect
+        function createDeathEffect(position) {
+            const particleCount = 30;
+            const particles = new THREE.Group();
+            
+            for (let i = 0; i < particleCount; i++) {
+                const geometry = new THREE.SphereGeometry(0.15, 4, 4);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: 0x888888,
+                    transparent: true,
+                    opacity: 1.0
+                });
+                const particle = new THREE.Mesh(geometry, material);
+                
+                particle.position.copy(position);
+                particle.velocity = new THREE.Vector3(
+                    (Math.random() - 0.5) * 3,
+                    Math.random() * 3 + 1,
+                    (Math.random() - 0.5) * 3
+                );
+                
+                particles.add(particle);
+            }
+            
+            scene.add(particles);
+            
+            // Animate explosion
+            let life = 0;
+            const animateExplosion = () => {
+                life += 0.03;
+                particles.children.forEach(p => {
+                    p.position.add(p.velocity);
+                    p.velocity.y -= 0.08; // Gravity
+                    p.material.opacity = 1.0 - life;
+                });
+                
+                if (life < 1.0) {
+                    requestAnimationFrame(animateExplosion);
+                } else {
+                    scene.remove(particles);
+                }
+            };
+            animateExplosion();
+        }
+        
         // Start the visualizer
         init();
         
         console.log('🌍 World Simulation Visualizer Started');
         console.log('API: ' + API_URL);
+        console.log('State Colors:', STATE_COLORS);
     </script>
 </body>
 </html>

@@ -14,11 +14,23 @@ pub struct LifecycleLayer {
 }
 
 impl LifecycleLayer {
+    /// Create with custom rates
+    pub fn with_rates(event_bus: Arc<EventBus>, birth_rate: f32, death_rate: f32) -> Self {
+        Self {
+            agents: Arc::new(RwLock::new(Vec::new())),
+            birth_rate,
+            death_rate,
+            event_bus,
+        }
+    }
+}
+
+impl LifecycleLayer {
     pub fn new(event_bus: Arc<EventBus>) -> Self {
         Self {
             agents: Arc::new(RwLock::new(Vec::new())),
-            birth_rate: 0.001,
-            death_rate: 0.001,
+            birth_rate: 0.01,  // Increased from 0.001 (10x)
+            death_rate: 0.005, // Increased from 0.001 (5x)
             event_bus,
         }
     }
@@ -113,6 +125,35 @@ impl LifecycleLayer {
     /// Count living agents
     pub fn count_living(&self) -> usize {
         self.agents.read().iter().filter(|a| a.is_alive()).count()
+    }
+
+    /// Update agent position
+    pub fn update_agent_position(&self, agent_id: AgentId, new_position: Position) {
+        let mut agents = self.agents.write();
+        if let Some(agent) = agents.iter_mut().find(|a| a.id == agent_id) {
+            agent.position = new_position;
+        }
+    }
+
+    /// Update agent state
+    pub fn update_agent_state(&self, agent_id: AgentId, new_state: AgentState) {
+        let mut agents = self.agents.write();
+        if let Some(agent) = agents.iter_mut().find(|a| a.id == agent_id) {
+            agent.state = new_state;
+        }
+    }
+
+    /// Update all living agents (for movement and behavior)
+    pub fn update_living_agents<F>(&self, mut updater: F)
+    where
+        F: FnMut(&mut SimAgent),
+    {
+        let mut agents = self.agents.write();
+        for agent in agents.iter_mut() {
+            if agent.is_alive() {
+                updater(agent);
+            }
+        }
     }
 }
 

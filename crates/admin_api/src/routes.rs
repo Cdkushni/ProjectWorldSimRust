@@ -145,6 +145,7 @@ pub async fn get_world_state(
     let world_state = state.world_state.read();
     Json(serde_json::json!({
         "agents": world_state.agents,
+        "resources": world_state.resources,
         "terrain_size": world_state.terrain_size
     }))
 }

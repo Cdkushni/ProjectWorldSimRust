@@ -22,7 +22,19 @@ pub struct SimulationMetrics {
 #[derive(Clone, Default)]
 pub struct WorldState {
     pub agents: Vec<AgentState>,
+    pub resources: Vec<ResourceState>,
     pub terrain_size: i32,
+}
+
+/// Resource state for visualization
+#[derive(Clone, Serialize)]
+pub struct ResourceState {
+    pub id: String,
+    pub resource_type: String,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+    pub quantity: u32,
 }
 
 /// Agent state for visualization
@@ -33,6 +45,8 @@ pub struct AgentState {
     pub y: f32,
     pub z: f32,
     pub name: String,
+    pub state: String,
+    pub faction: Option<String>,
 }
 
 /// Admin API server

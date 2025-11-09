@@ -3,5 +3,5 @@ mod routes;
 mod handlers;
 mod server;
 
-pub use server::{AdminApiServer, SimulationMetrics, WorldState, AgentState};
+pub use server::{AdminApiServer, SimulationMetrics, WorldState, AgentState, ResourceState};
 

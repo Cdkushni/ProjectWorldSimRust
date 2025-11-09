@@ -14,10 +14,11 @@ pub struct SimAgent {
     pub skills: SkillDatabase,
     pub domain: AgentDomain,
     pub state: AgentState,
+    pub job: Job,
 }
 
 /// Current behavioral state
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum AgentState {
     Idle,
     Moving { destination: GridCoord },
@@ -28,8 +29,27 @@ pub enum AgentState {
     Dead,
 }
 
+/// Agent job/profession
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Job {
+    Woodcutter,
+    Miner,
+    Farmer,
+    Builder,
+    Unemployed,
+}
+
 impl SimAgent {
     pub fn new(name: String, position: Position) -> Self {
+        // Random job assignment
+        let job = match rand::random::<u32>() % 5 {
+            0 => Job::Woodcutter,
+            1 => Job::Miner,
+            2 => Job::Farmer,
+            3 => Job::Builder,
+            _ => Job::Unemployed,
+        };
+        
         Self {
             id: AgentId::new(),
             name,
@@ -40,6 +60,7 @@ impl SimAgent {
             skills: SkillDatabase::new(),
             domain: AgentDomain::new(),
             state: AgentState::Idle,
+            job,
         }
     }
 
