@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 World Simulation Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a1a;
+            color: #eee;
+            overflow: hidden;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #stats {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            min-width: 250px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        #stats h2 {
+            margin-bottom: 15px;
+            color: #4ecdc4;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+        
+        .stat-label {
+            color: #aaa;
+        }
+        
+        .stat-value {
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        #connection-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .connected {
+            background: rgba(76, 175, 80, 0.9);
+            border: 2px solid #4caf50;
+        }
+        
+        .disconnected {
+            background: rgba(244, 67, 54, 0.9);
+            border: 2px solid #f44336;
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 15px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        #controls button {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            border: none;
+            color: #fff;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+        }
+        
+        #controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.5);
+        }
+        
+        #controls button:active {
+            transform: translateY(0);
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 28px;
+            color: #4ecdc4;
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(78, 205, 196, 0.2);
+            border-top-color: #4ecdc4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        #info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 15px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            font-size: 12px;
+            color: #aaa;
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="stats">
+        <h2>📊 Simulation Stats</h2>
+        <div class="stat-item">
+            <span class="stat-label">🧑 Agents:</span>
+            <span class="stat-value" id="agent-count">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">⏱️ Uptime:</span>
+            <span class="stat-value" id="uptime">0s</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">📡 Events:</span>
+            <span class="stat-value" id="events">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">🎮 FPS:</span>
+            <span class="stat-value" id="fps">60</span>
+        </div>
+    </div>
+    
+    <div id="connection-status" class="disconnected">● Connecting...</div>
+    
+    <div id="controls">
+        <button onclick="resetCamera()">🎥 Reset Camera</button>
+        <button onclick="togglePause()" id="pauseBtn">⏸️ Pause</button>
+    </div>
+    
+    <div id="info">
+        <strong>🕹️ Controls:</strong><br>
+        Left Mouse: Rotate<br>
+        Right Mouse: Pan<br>
+        Scroll: Zoom
+    </div>
+    
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        Loading Three.js...
+    </div>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        
+        const API_URL = 'http://127.0.0.1:8080';
+        let scene, camera, renderer, controls;
+        let agents = new Map();
+        let isPaused = false;
+        let terrainMesh;
+        
+        // Initialize Three.js scene
+        function init() {
+            document.getElementById('loading').style.display = 'none';
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a1a);
+            scene.fog = new THREE.Fog(0x0a0a1a, 150, 400);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                60,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(70, 60, 70);
+            camera.lookAt(0, 0, 0);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Controls
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 20;
+            controls.maxDistance = 200;
+            controls.maxPolarAngle = Math.PI / 2.1;
+            
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0x404060, 1.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            directionalLight.position.set(80, 120, 60);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.left = -100;
+            directionalLight.shadow.camera.right = 100;
+            directionalLight.shadow.camera.top = 100;
+            directionalLight.shadow.camera.bottom = -100;
+            scene.add(directionalLight);
+            
+            // Hemisphere light for ambient atmosphere
+            const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x6b8e23, 0.5);
+            scene.add(hemiLight);
+            
+            // Grid helper
+            const gridHelper = new THREE.GridHelper(200, 40, 0x4ecdc4, 0x2a2a3e);
+            gridHelper.position.y = 0.01;
+            scene.add(gridHelper);
+            
+            // Terrain plane
+            const terrainGeometry = new THREE.PlaneGeometry(200, 200, 20, 20);
+            const terrainMaterial = new THREE.MeshStandardMaterial({
+                color: 0x1a4d2e,
+                roughness: 0.9,
+                metalness: 0.1,
+                side: THREE.DoubleSide
+            });
+            terrainMesh = new THREE.Mesh(terrainGeometry, terrainMaterial);
+            terrainMesh.rotation.x = -Math.PI / 2;
+            terrainMesh.receiveShadow = true;
+            terrainMesh.position.y = 0;
+            scene.add(terrainMesh);
+            
+            // Add some ambient details (trees/rocks)
+            addEnvironmentDetails();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start animation loop
+            animate();
+            
+            // Start fetching data
+            fetchWorldState();
+            setInterval(fetchWorldState, 500); // Update every 0.5 seconds for smoother movement
+            fetchMetrics();
+            setInterval(fetchMetrics, 1000);
+        }
+        
+        // Add environment details
+        function addEnvironmentDetails() {
+            // Add some decorative trees
+            for (let i = 0; i < 30; i++) {
+                const treeGeometry = new THREE.CylinderGeometry(0.3, 0.5, 4, 6);
+                const treeMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x2d5016,
+                    roughness: 0.9 
+                });
+                const tree = new THREE.Mesh(treeGeometry, treeMaterial);
+                tree.position.set(
+                    Math.random() * 180 - 90,
+                    2,
+                    Math.random() * 180 - 90
+                );
+                tree.castShadow = true;
+                scene.add(tree);
+                
+                // Tree top
+                const topGeometry = new THREE.ConeGeometry(1.5, 3, 8);
+                const topMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x3a7d44,
+                    roughness: 0.8 
+                });
+                const top = new THREE.Mesh(topGeometry, topMaterial);
+                top.position.copy(tree.position);
+                top.position.y += 4;
+                top.castShadow = true;
+                scene.add(top);
+            }
+        }
+        
+        // Fetch world state from API
+        async function fetchWorldState() {
+            try {
+                const response = await fetch(`${API_URL}/api/world/state`);
+                if (!response.ok) throw new Error('API returned ' + response.status);
+                const data = await response.json();
+                
+                updateConnectionStatus(true);
+                updateAgents(data.agents || []);
+            } catch (error) {
+                console.error('Error fetching world state:', error);
+                updateConnectionStatus(false);
+            }
+        }
+        
+        // Fetch metrics from API
+        async function fetchMetrics() {
+            try {
+                const response = await fetch(`${API_URL}/api/metrics`);
+                if (!response.ok) throw new Error('API returned ' + response.status);
+                const data = await response.json();
+                
+                document.getElementById('agent-count').textContent = data.agent_count || 0;
+                document.getElementById('uptime').textContent = `${data.uptime_seconds || 0}s`;
+                document.getElementById('events').textContent = data.events_processed || 0;
+            } catch (error) {
+                console.error('Error fetching metrics:', error);
+            }
+        }
+        
+        // Update connection status indicator
+        function updateConnectionStatus(connected) {
+            const statusEl = document.getElementById('connection-status');
+            if (connected) {
+                statusEl.textContent = '● Connected';
+                statusEl.className = 'connected';
+            } else {
+                statusEl.textContent = '● Disconnected';
+                statusEl.className = 'disconnected';
+            }
+        }
+        
+        // Update agents in the scene
+        function updateAgents(agentData) {
+            const currentAgentIds = new Set();
+            
+            agentData.forEach(agentInfo => {
+                currentAgentIds.add(agentInfo.id);
+                
+                if (!agents.has(agentInfo.id)) {
+                    // Create new agent with unique color
+                    const hue = Math.random();
+                    const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
+                    
+                    const geometry = new THREE.CapsuleGeometry(0.5, 1.5, 8, 16);
+                    const material = new THREE.MeshStandardMaterial({
+                        color: color,
+                        roughness: 0.6,
+                        metalness: 0.4,
+                        emissive: color,
+                        emissiveIntensity: 0.2
+                    });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
+                    
+                    // Add a little glow sphere on top (head indicator)
+                    const headGeometry = new THREE.SphereGeometry(0.3, 8, 8);
+                    const headMaterial = new THREE.MeshBasicMaterial({ 
+                        color: color,
+                        opacity: 0.8,
+                        transparent: true
+                    });
+                    const head = new THREE.Mesh(headGeometry, headMaterial);
+                    head.position.y = 1.5;
+                    mesh.add(head);
+                    
+                    scene.add(mesh);
+                    
+                    agents.set(agentInfo.id, {
+                        mesh: mesh,
+                        targetPos: new THREE.Vector3(agentInfo.x, agentInfo.y + 1, agentInfo.z),
+                        name: agentInfo.name
+                    });
+                } else {
+                    // Update target position (will smoothly interpolate)
+                    const agent = agents.get(agentInfo.id);
+                    agent.targetPos.set(agentInfo.x, agentInfo.y + 1, agentInfo.z);
+                }
+            });
+            
+            // Remove agents that no longer exist (died)
+            agents.forEach((agent, id) => {
+                if (!currentAgentIds.has(id)) {
+                    // Death animation - fade and shrink
+                    const fadeOut = () => {
+                        agent.mesh.scale.multiplyScalar(0.95);
+                        agent.mesh.material.opacity -= 0.05;
+                        if (agent.mesh.material.opacity > 0) {
+                            requestAnimationFrame(fadeOut);
+                        } else {
+                            scene.remove(agent.mesh);
+                        }
+                    };
+                    agent.mesh.material.transparent = true;
+                    fadeOut();
+                    agents.delete(id);
+                }
+            });
+        }
+        
+        // Animation loop
+        let lastTime = Date.now();
+        let frameCount = 0;
+        let fps = 60;
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (!isPaused) {
+                // Smooth agent movement with interpolation
+                agents.forEach(agent => {
+                    agent.mesh.position.lerp(agent.targetPos, 0.1);
+                    
+                    // Add subtle bobbing animation (breathing effect)
+                    const time = Date.now() * 0.001;
+                    agent.mesh.position.y += Math.sin(time * 2 + agent.mesh.position.x) * 0.005;
+                    
+                    // Slight rotation for life-like movement
+                    agent.mesh.rotation.y += 0.01;
+                });
+                
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            
+            // Calculate FPS
+            frameCount++;
+            const currentTime = Date.now();
+            if (currentTime - lastTime >= 1000) {
+                fps = frameCount;
+                document.getElementById('fps').textContent = fps;
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+        }
+        
+        // Handle window resize
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Global functions for UI
+        window.resetCamera = function() {
+            camera.position.set(70, 60, 70);
+            camera.lookAt(0, 0, 0);
+            controls.target.set(0, 0, 0);
+            controls.update();
+        };
+        
+        window.togglePause = function() {
+            isPaused = !isPaused;
+            const btn = document.getElementById('pauseBtn');
+            btn.textContent = isPaused ? '▶️ Resume' : '⏸️ Pause';
+        };
+        
+        // Start the visualizer
+        init();
+        
+        console.log('🌍 World Simulation Visualizer Started');
+        console.log('API: ' + API_URL);
+    </script>
+</body>
+</html>
+

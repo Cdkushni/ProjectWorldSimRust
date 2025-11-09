@@ -1,0 +1,21 @@
+[package]
+name = "world_sim_admin_api"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+world_sim_core = { path = "../core" }
+world_sim_event_bus = { path = "../event_bus" }
+world_sim_persistence = { path = "../persistence" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+axum = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+tokio = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+parking_lot = { workspace = true }
+

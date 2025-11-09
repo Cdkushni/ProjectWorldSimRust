@@ -1,0 +1,16 @@
+[package]
+name = "world_sim_meta"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+world_sim_core = { path = "../core" }
+world_sim_event_bus = { path = "../event_bus" }
+world_sim_societal = { path = "../societal" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+rand = { workspace = true }
+parking_lot = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true }
+

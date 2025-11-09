@@ -1,0 +1,87 @@
+   Compiling world_sim_meta v0.1.0 (/mnt/e/Repo/ProjectWorldSimRust/crates/meta)
+warning: unused import: `crate::handlers`
+ --> crates/admin_api/src/routes.rs:1:5
+  |
+1 | use crate::handlers;
+  |     ^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Serialize`
+ --> crates/admin_api/src/routes.rs:7:26
+  |
+7 | use serde::{Deserialize, Serialize};
+  |                          ^^^^^^^^^
+
+warning: unused import: `world_sim_core::AgentId`
+ --> crates/admin_api/src/routes.rs:9:5
+  |
+9 | use world_sim_core::AgentId;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Deserialize` and `Serialize`
+ --> crates/admin_api/src/handlers.rs:4:13
+  |
+4 | use serde::{Deserialize, Serialize};
+  |             ^^^^^^^^^^^  ^^^^^^^^^
+
+warning: unused variable: `state`
+   --> crates/admin_api/src/routes.rs:101:11
+    |
+101 |     State(state): State<Arc<ApiState>>,
+    |           ^^^^^ help: if this is intentional, prefix it with an underscore: `_state`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `source` is never read
+  --> crates/admin_api/src/routes.rs:73:9
+   |
+71 | pub struct AddMemoryRequest {
+   |            ---------------- field in this struct
+72 |     pub fact: String,
+73 |     pub source: Option<String>,
+   |         ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `world_sim_admin_api` (lib) generated 6 warnings (run `cargo fix --lib -p world_sim_admin_api` to apply 4 suggestions)
+warning: unused variable: `mortality_rate`
+   --> crates/meta/src/dungeon_master.rs:224:34
+    |
+224 |             ImpactType::Plague { mortality_rate } => {
+    |                                  ^^^^^^^^^^^^^^ help: try ignoring the field: `mortality_rate: _`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `region`
+   --> crates/meta/src/dungeon_master.rs:227:36
+    |
+227 |             ImpactType::Uprising { region } => {
+    |                                    ^^^^^^ help: try ignoring the field: `region: _`
+
+warning: unused variable: `disaster_type`
+   --> crates/meta/src/dungeon_master.rs:230:43
+    |
+230 |             ImpactType::NaturalDisaster { disaster_type } => {
+    |                                           ^^^^^^^^^^^^^ help: try ignoring the field: `disaster_type: _`
+
+warning: unused variable: `discovery_type`
+   --> crates/meta/src/dungeon_master.rs:233:37
+    |
+233 |             ImpactType::Discovery { discovery_type } => {
+    |                                     ^^^^^^^^^^^^^^ help: try ignoring the field: `discovery_type: _`
+
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+   --> crates/meta/src/dungeon_master.rs:159:17
+    |
+159 |         boredom.min(1.0)
+    |                 ^^^
+    |
+help: you must specify a type for this binding, like `f32`
+    |
+137 |         let mut boredom: f32 = 0.0;
+    |                        +++++
+
+For more information about this error, try `rustc --explain E0689`.
+warning: `world_sim_meta` (lib) generated 4 warnings
+error: could not compile `world_sim_meta` (lib) due to 1 previous error; 4 warnings emitted

@@ -1,0 +1,28 @@
+[package]
+name = "sim_server"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "sim_server"
+path = "src/main.rs"
+
+[dependencies]
+world_sim_core = { path = "../crates/core" }
+world_sim_event_bus = { path = "../crates/event_bus" }
+world_sim_persistence = { path = "../crates/persistence" }
+world_sim_admin_api = { path = "../crates/admin_api" }
+world_sim_world = { path = "../crates/world" }
+world_sim_agents = { path = "../crates/agents" }
+world_sim_cognitive = { path = "../crates/cognitive" }
+world_sim_societal = { path = "../crates/societal" }
+world_sim_meta = { path = "../crates/meta" }
+
+tokio = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+parking_lot = { workspace = true }
+
