@@ -187,8 +187,8 @@ impl Simulation {
                         // Different factions = enemies!
                         let dist = agent_a.position.distance_to(&agent_b.position);
                         
-                        if dist < 5.0 {
-                            // Close enough to fight!
+                        if dist < 15.0 {
+                            // Close enough to fight! (increased from 5.0 for more frequent combat)
                             combat_pairs.push((agent_a.id, agent_b.id, dist));
                         }
                     }
@@ -199,14 +199,14 @@ impl Simulation {
         // Process combat
         let mut rng = rand::thread_rng();
         for (id_a, id_b, dist) in combat_pairs {
-            // 10% chance per tick that someone dies
-            if dist < 3.0 && rng.gen::<f32>() < 0.1 {
+            // Set to fighting state whenever enemies are in range
+            self.lifecycle.update_agent_state(id_a, AgentState::Fighting { target: id_b });
+            self.lifecycle.update_agent_state(id_b, AgentState::Fighting { target: id_a });
+            
+            // 15% chance per tick that someone dies when very close
+            if dist < 5.0 && rng.gen::<f32>() < 0.15 {
                 let loser = if rng.gen::<bool>() { id_a } else { id_b };
                 self.lifecycle.kill_agent(loser, "Combat".to_string()).await;
-            } else {
-                // Set to fighting state
-                self.lifecycle.update_agent_state(id_a, AgentState::Fighting { target: id_b });
-                self.lifecycle.update_agent_state(id_b, AgentState::Fighting { target: id_a });
             }
         }
         
@@ -248,26 +248,28 @@ impl Simulation {
             
             // Movement priorities: 1) Flee from close enemies, 2) Move to job, 3) Stay near allies
             if let Some(enemy_pos) = nearest_enemy_pos {
-                if nearest_enemy_dist < 10.0 {
-                    // Enemy nearby! Flee or fight
-                    if agent.has_trait(world_sim_core::Trait::Brave) || matches!(agent.state, AgentState::Fighting { .. }) {
-                        // Move TOWARD enemy (brave or already fighting)
+                if nearest_enemy_dist < 25.0 {
+                    // Enemy nearby! Most agents are aggressive (increased from 10.0 for more combat)
+                    if agent.has_trait(world_sim_core::Trait::Brave) 
+                       || matches!(agent.state, AgentState::Fighting { .. })
+                       || rand::random::<f32>() < 0.7 {  // 70% of agents are aggressive
+                        // Move TOWARD enemy (brave, fighting, or randomly aggressive)
                         let dx = enemy_pos.x - agent.position.x;
                         let dz = enemy_pos.z - agent.position.z;
                         let dist = (dx * dx + dz * dz).sqrt();
                         if dist > 0.1 {
-                            agent.position.x += (dx / dist) * 0.4;
-                            agent.position.z += (dz / dist) * 0.4;
+                            agent.position.x += (dx / dist) * 1.0; // Increased from 0.4 for faster pursuit
+                            agent.position.z += (dz / dist) * 1.0;
                         }
                         return; // Skip other movement
                     } else {
-                        // Flee!
+                        // Flee! (only 30% of agents flee)
                         let dx = agent.position.x - enemy_pos.x;
                         let dz = agent.position.z - enemy_pos.z;
                         let dist = (dx * dx + dz * dz).sqrt();
                         if dist > 0.1 {
-                            agent.position.x = (agent.position.x + (dx / dist) * 0.5).clamp(-95.0, 95.0);
-                            agent.position.z = (agent.position.z + (dz / dist) * 0.5).clamp(-95.0, 95.0);
+                            agent.position.x = (agent.position.x + (dx / dist) * 0.6).clamp(-95.0, 95.0);
+                            agent.position.z = (agent.position.z + (dz / dist) * 0.6).clamp(-95.0, 95.0);
                         }
                         return; // Skip other movement
                     }

@@ -15,6 +15,8 @@ pub struct SimAgent {
     pub domain: AgentDomain,
     pub state: AgentState,
     pub job: Job,
+    pub social_class: SocialClass,
+    pub leader_id: Option<AgentId>, // For followers (knights follow king, etc.)
 }
 
 /// Current behavioral state
@@ -27,6 +29,11 @@ pub enum AgentState {
     Sleeping,
     Eating,
     Dead,
+    Talking { with: AgentId },        // Having a conversation
+    Patrolling { route_index: usize }, // Soldiers patrolling
+    Following { leader: AgentId },     // Knights following king
+    Building { building_type: String }, // Constructing buildings
+    Trading { with: AgentId },         // Merchants trading
 }
 
 /// Agent job/profession
@@ -39,15 +46,38 @@ pub enum Job {
     Unemployed,
 }
 
+/// Social hierarchy class
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SocialClass {
+    King,       // 1 per faction - leader
+    Noble,      // ~5% - landowners, advisors
+    Knight,     // ~8% - elite warriors, king's guard
+    Soldier,    // ~15% - military, guards, patrol
+    Merchant,   // ~12% - traders, shopkeepers
+    Burgher,    // ~10% - craftsmen, guild members
+    Cleric,     // ~5% - priests, healers
+    Peasant,    // ~44% - farmers, laborers, commoners
+}
+
 impl SimAgent {
     pub fn new(name: String, position: Position) -> Self {
-        // Random job assignment
-        let job = match rand::random::<u32>() % 5 {
-            0 => Job::Woodcutter,
-            1 => Job::Miner,
-            2 => Job::Farmer,
-            3 => Job::Builder,
-            _ => Job::Unemployed,
+        Self::new_with_class(name, position, SocialClass::Peasant)
+    }
+    
+    pub fn new_with_class(name: String, position: Position, social_class: SocialClass) -> Self {
+        // Assign job based on social class
+        let job = match social_class {
+            SocialClass::King | SocialClass::Noble | SocialClass::Knight => Job::Unemployed,
+            SocialClass::Soldier => Job::Unemployed, // Full-time military
+            SocialClass::Merchant | SocialClass::Burgher => Job::Builder, // Craftsmen
+            SocialClass::Cleric => Job::Unemployed, // Religious duties
+            SocialClass::Peasant => {
+                match rand::random::<u32>() % 3 {
+                    0 => Job::Woodcutter,
+                    1 => Job::Miner,
+                    _ => Job::Farmer,
+                }
+            }
         };
         
         Self {
@@ -61,6 +91,8 @@ impl SimAgent {
             domain: AgentDomain::new(),
             state: AgentState::Idle,
             job,
+            social_class,
+            leader_id: None,
         }
     }
 
