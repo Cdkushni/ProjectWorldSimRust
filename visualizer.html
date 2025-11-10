@@ -376,6 +376,251 @@
             from { transform: translateX(0); opacity: 1; }
             to { transform: translateX(400px); opacity: 0; }
         }
+        
+        /* Economy Dashboard */
+        #economy-dashboard {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1400px;
+            height: 85%;
+            background: linear-gradient(135deg, rgba(10, 10, 26, 0.98), rgba(20, 20, 40, 0.98));
+            border: 3px solid #4ecdc4;
+            border-radius: 16px;
+            box-shadow: 0 16px 64px rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        #economy-dashboard.visible {
+            display: block;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #4ecdc4;
+        }
+        
+        .dashboard-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+        
+        .dashboard-close {
+            font-size: 28px;
+            cursor: pointer;
+            color: #e74c3c;
+            padding: 5px 15px;
+            background: rgba(231, 76, 60, 0.2);
+            border-radius: 8px;
+        }
+        
+        .dashboard-close:hover {
+            background: rgba(231, 76, 60, 0.4);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+        
+        .dashboard-card h3 {
+            margin: 0 0 15px 0;
+            color: #4ecdc4;
+            font-size: 18px;
+            border-bottom: 1px solid rgba(78, 205, 196, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .dashboard-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .dashboard-metric-label {
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .dashboard-metric-value {
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .metric-positive {
+            color: #2ecc71;
+        }
+        
+        .metric-negative {
+            color: #e74c3c;
+        }
+        
+        .metric-neutral {
+            color: #f39c12;
+        }
+        
+        .price-chart {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .price-bar {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        
+        .price-bar-label {
+            width: 80px;
+            color: #aaa;
+            font-size: 13px;
+        }
+        
+        .price-bar-container {
+            flex: 1;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .price-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .price-bar-value {
+            width: 60px;
+            text-align: right;
+            color: #fff;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        
+        .price-bar:hover {
+            background: rgba(78, 205, 196, 0.1);
+            transform: scale(1.02);
+            transition: all 0.2s ease;
+        }
+        
+        /* Trading Chart Modal */
+        #trading-chart-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1200px;
+            height: 80%;
+            background: linear-gradient(135deg, rgba(5, 5, 15, 0.99), rgba(15, 15, 30, 0.99));
+            border: 3px solid #f39c12;
+            border-radius: 16px;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            padding: 30px;
+            overflow: hidden;
+        }
+        
+        #trading-chart-modal.visible {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .trading-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f39c12;
+        }
+        
+        .trading-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #f39c12;
+        }
+        
+        .trading-close {
+            font-size: 32px;
+            cursor: pointer;
+            color: #e74c3c;
+            padding: 5px 15px;
+            background: rgba(231, 76, 60, 0.2);
+            border-radius: 8px;
+        }
+        
+        .trading-close:hover {
+            background: rgba(231, 76, 60, 0.4);
+        }
+        
+        .trading-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .trading-stat {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .trading-stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .trading-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .trading-chart-container {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(243, 156, 18, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        #price-history-canvas {
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -433,21 +678,54 @@
             <span class="legend-label">⚔️ Fighting</span>
             <span class="legend-count" id="count-fighting">0</span>
         </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #3498db;"></div>
+            <span class="legend-label">💬 Talking</span>
+            <span class="legend-count" id="count-talking">0</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #f39c12;"></div>
+            <span class="legend-label">👮 Patrolling</span>
+            <span class="legend-count" id="count-patrolling">0</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #2ecc71;"></div>
+            <span class="legend-label">🛡️ Following</span>
+            <span class="legend-count" id="count-following">0</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #8b4513;"></div>
+            <span class="legend-label">🏗️ Building</span>
+            <span class="legend-count" id="count-building">0</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #f1c40f;"></div>
+            <span class="legend-label">💰 Trading</span>
+            <span class="legend-count" id="count-trading">0</span>
+        </div>
     </div>
     
     <div id="faction-stats">
-        <h3>⚔️ Faction Status</h3>
+        <h3>⚔️ Political Status</h3>
         <div class="faction-item">
-            <div class="faction-name" style="color: #3498db;">🔵 Kingdom A</div>
-            <div class="faction-count" id="faction-a-count">0 agents</div>
+            <div class="faction-name" style="color: #4ecdc4;">🏛️ Unified Society</div>
+            <div class="faction-count" id="unified-count">100 agents</div>
         </div>
-        <div class="faction-item">
-            <div class="faction-name" style="color: #e74c3c;">🔴 Kingdom B</div>
-            <div class="faction-count" id="faction-b-count">0 agents</div>
+        <div id="faction-a-container" style="display: none;">
+            <div class="faction-item">
+                <div class="faction-name" style="color: #3498db;">🔵 Faction A</div>
+                <div class="faction-count" id="faction-a-count">0 agents</div>
+            </div>
+        </div>
+        <div id="faction-b-container" style="display: none;">
+            <div class="faction-item">
+                <div class="faction-name" style="color: #e74c3c;">🔴 Faction B</div>
+                <div class="faction-count" id="faction-b-count">0 agents</div>
+            </div>
         </div>
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
             <div class="faction-count">
-                <span style="color: #ff6b6b;">💀 War Casualties:</span>
+                <span style="color: #ff6b6b;">💀 Total Deaths:</span>
                 <span id="casualties" style="color: #fff; font-weight: bold;">0</span>
             </div>
         </div>
@@ -473,6 +751,26 @@
         </div>
     </div>
     
+    <div id="currency-stats" style="position: absolute; top: 720px; left: 20px; background: rgba(0, 0, 0, 0.85); padding: 20px; border-radius: 12px; min-width: 280px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);">
+        <h3>💰 Economy</h3>
+        <div class="resource-row">
+            <span>Money Supply:</span>
+            <span id="currency-supply" style="color: #f1c40f; font-weight: bold;">0</span>
+        </div>
+        <div class="resource-row">
+            <span>Inflation Rate:</span>
+            <span id="currency-inflation" style="color: #e74c3c; font-weight: bold;">0%</span>
+        </div>
+        <div class="resource-row">
+            <span>Purchasing Power:</span>
+            <span id="currency-power" style="color: #2ecc71; font-weight: bold;">100%</span>
+        </div>
+        <div class="resource-row">
+            <span>💸 Transactions:</span>
+            <span id="currency-transactions" style="color: #4ecdc4; font-weight: bold;">0</span>
+        </div>
+    </div>
+    
     <div id="activity-feed">
         <h3>📡 Live Activity</h3>
         <div id="activity-list"></div>
@@ -480,12 +778,208 @@
     
     <div id="tooltip"></div>
     
+    <!-- Economy Dashboard Overlay -->
+    <div id="economy-dashboard">
+        <div class="dashboard-header">
+            <div class="dashboard-title">📊 Economy & Market Dashboard</div>
+            <div class="dashboard-close" onclick="toggleEconomyDashboard()">✕</div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Currency Overview -->
+            <div class="dashboard-card">
+                <h3>💰 Currency System</h3>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Total Supply</span>
+                    <span class="dashboard-metric-value" id="dash-money-supply">20,000</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Inflation Rate</span>
+                    <span class="dashboard-metric-value metric-negative" id="dash-inflation">0.00%</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Purchasing Power</span>
+                    <span class="dashboard-metric-value metric-positive" id="dash-purchasing">100.0%</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Transactions</span>
+                    <span class="dashboard-metric-value" id="dash-transactions">0</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Velocity</span>
+                    <span class="dashboard-metric-value metric-neutral" id="dash-velocity">0.00</span>
+                </div>
+            </div>
+            
+            <!-- Market Overview -->
+            <div class="dashboard-card">
+                <h3>🏪 Market Activity</h3>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Total Markets</span>
+                    <span class="dashboard-metric-value" id="dash-market-count">3</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Total Transactions</span>
+                    <span class="dashboard-metric-value" id="dash-market-transactions">0</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Avg Reputation</span>
+                    <span class="dashboard-metric-value" id="dash-market-reputation">50.0</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Active Traders</span>
+                    <span class="dashboard-metric-value" id="dash-active-traders">0</span>
+                </div>
+            </div>
+            
+            <!-- Resource Supply -->
+            <div class="dashboard-card">
+                <h3>📦 Resource Supply</h3>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">🌲 Wood</span>
+                    <span class="dashboard-metric-value metric-positive" id="dash-supply-wood">0</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">🪨 Stone</span>
+                    <span class="dashboard-metric-value metric-positive" id="dash-supply-stone">0</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">🌾 Food</span>
+                    <span class="dashboard-metric-value metric-positive" id="dash-supply-food">0</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">⚙️ Iron</span>
+                    <span class="dashboard-metric-value metric-positive" id="dash-supply-iron">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resource Prices Chart (Clickable) -->
+        <div class="dashboard-card" style="grid-column: span 3;">
+            <h3>💹 Resource Prices (per unit) - Click for Trading Chart</h3>
+            <div class="price-chart">
+                <div class="price-bar" style="cursor: pointer;" onclick="openTradingChart('wood', '🌲 Wood')">
+                    <span class="price-bar-label">🌲 Wood</span>
+                    <div class="price-bar-container">
+                        <div class="price-bar-fill" id="price-bar-wood" style="width: 10%;"></div>
+                    </div>
+                    <span class="price-bar-value" id="price-wood">5.0</span>
+                </div>
+                <div class="price-bar" style="cursor: pointer;" onclick="openTradingChart('stone', '🪨 Stone')">
+                    <span class="price-bar-label">🪨 Stone</span>
+                    <div class="price-bar-container">
+                        <div class="price-bar-fill" id="price-bar-stone" style="width: 6%;"></div>
+                    </div>
+                    <span class="price-bar-value" id="price-stone">3.0</span>
+                </div>
+                <div class="price-bar" style="cursor: pointer;" onclick="openTradingChart('food', '🌾 Food')">
+                    <span class="price-bar-label">🌾 Food</span>
+                    <div class="price-bar-container">
+                        <div class="price-bar-fill" id="price-bar-food" style="width: 20%;"></div>
+                    </div>
+                    <span class="price-bar-value" id="price-food">10.0</span>
+                </div>
+                <div class="price-bar" style="cursor: pointer;" onclick="openTradingChart('iron', '⚙️ Iron')">
+                    <span class="price-bar-label">⚙️ Iron</span>
+                    <div class="price-bar-container">
+                        <div class="price-bar-fill" id="price-bar-iron" style="width: 30%;"></div>
+                    </div>
+                    <span class="price-bar-value" id="price-iron">15.0</span>
+                </div>
+                <div class="price-bar" style="cursor: pointer;" onclick="openTradingChart('weapon', '⚔️ Weapon')">
+                    <span class="price-bar-label">⚔️ Weapon</span>
+                    <div class="price-bar-container">
+                        <div class="price-bar-fill" id="price-bar-weapon" style="width: 100%;"></div>
+                    </div>
+                    <span class="price-bar-value" id="price-weapon">50.0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Per Capita Resources -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>👥 Per Capita Resources</h3>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Food / Person</span>
+                    <span class="dashboard-metric-value" id="dash-food-per-capita">0.0</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Materials / Person</span>
+                    <span class="dashboard-metric-value" id="dash-materials-per-capita">0.0</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">War Threshold</span>
+                    <span class="dashboard-metric-value metric-negative">Food &lt;10, Mat &lt;15</span>
+                </div>
+            </div>
+            
+            <!-- Market Details -->
+            <div class="dashboard-card">
+                <h3>🏛️ Market Details</h3>
+                <div id="market-details-list">
+                    <!-- Will be populated dynamically -->
+                </div>
+            </div>
+            
+            <!-- Economic Health -->
+            <div class="dashboard-card">
+                <h3>📈 Economic Health</h3>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Overall Status</span>
+                    <span class="dashboard-metric-value metric-positive" id="dash-economic-status">Healthy</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Resource Stress</span>
+                    <span class="dashboard-metric-value" id="dash-resource-stress">Low</span>
+                </div>
+                <div class="dashboard-metric">
+                    <span class="dashboard-metric-label">Market Activity</span>
+                    <span class="dashboard-metric-value" id="dash-market-activity">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Trading Chart Modal -->
+    <div id="trading-chart-modal">
+        <div class="trading-header">
+            <div class="trading-title" id="trading-chart-title">📈 Resource Trading Chart</div>
+            <div class="trading-close" onclick="closeTradingChart()">✕</div>
+        </div>
+        
+        <div class="trading-stats">
+            <div class="trading-stat">
+                <div class="trading-stat-label">Current Price</div>
+                <div class="trading-stat-value" id="trading-current-price">5.0</div>
+            </div>
+            <div class="trading-stat">
+                <div class="trading-stat-label">Session High</div>
+                <div class="trading-stat-value metric-positive" id="trading-high-price">5.2</div>
+            </div>
+            <div class="trading-stat">
+                <div class="trading-stat-label">Session Low</div>
+                <div class="trading-stat-value metric-negative" id="trading-low-price">4.8</div>
+            </div>
+            <div class="trading-stat">
+                <div class="trading-stat-label">Session Change</div>
+                <div class="trading-stat-value" id="trading-price-change">+0.0%</div>
+            </div>
+        </div>
+        
+        <div class="trading-chart-container">
+            <canvas id="price-history-canvas"></canvas>
+        </div>
+    </div>
+    
     <div id="connection-status" class="disconnected">● Connecting...</div>
     
     <div id="controls">
         <button onclick="resetCamera()">🎥 Reset Camera</button>
         <button onclick="togglePause()" id="pauseBtn">⏸️ Pause</button>
         <button onclick="testCombat()">⚔️ Test Combat</button>
+        <button onclick="testBuilding()">🏗️ Test Building</button>
+        <button onclick="toggleEconomyDashboard()">📊 Economy Dashboard</button>
     </div>
     
     <div id="info">
@@ -530,6 +1024,19 @@
         let showingFactionColors = false;
         let lastKnownEventId = null;
         let processedEventIds = new Set();
+        let markets = new Map();
+        let buildings = new Map();
+        let priceHistory = {
+            wood: [],
+            stone: [],
+            food: [],
+            iron: [],
+            weapon: []
+        };
+        let currentTradingResource = null;
+        let priceHistoryInterval = null;
+        let backgroundPriceTracking = null;
+        const MAX_PRICE_HISTORY = 500; // Store ~16 minutes of data at 2s intervals
         
         // State-based colors
         const STATE_COLORS = {
@@ -539,7 +1046,24 @@
             'Eating': 0xffd93d,    // Yellow
             'Sleeping': 0x9b59b6,  // Purple
             'Fighting': 0xe74c3c,  // Dark red
-            'Dead': 0x555555       // Gray
+            'Dead': 0x555555,      // Gray
+            'Talking': 0x3498db,   // Blue
+            'Patrolling': 0xf39c12,// Orange
+            'Following': 0x2ecc71, // Green
+            'Building': 0x8b4513,  // Brown
+            'Trading': 0xf1c40f    // Gold
+        };
+        
+        // Social class visual styles
+        const CLASS_STYLES = {
+            'King': { scale: 1.5, icon: '👑', color: 0xffd700 },
+            'Noble': { scale: 1.3, icon: '🎩', color: 0x9b59b6 },
+            'Knight': { scale: 1.2, icon: '🛡️', color: 0x34495e },
+            'Soldier': { scale: 1.1, icon: '⚔️', color: 0x7f8c8d },
+            'Merchant': { scale: 1.0, icon: '💰', color: 0xf39c12 },
+            'Burgher': { scale: 1.0, icon: '🏪', color: 0xe67e22 },
+            'Cleric': { scale: 1.0, icon: '✝️', color: 0xecf0f1 },
+            'Peasant': { scale: 0.9, icon: '👨', color: 0x95a5a6 }
         };
         
         // Faction colors (for team identification)
@@ -664,6 +1188,9 @@
                     updateConnectionStatus(true);
                     updateAgents(data.agents);
                     updateResources(data.resources || []);
+                    updateMarkets(data.markets || []);
+                    updateBuildings(data.buildings || []);
+                    updateCurrencyInfo(data.currency_info || {});
                 } else {
                     console.warn('Invalid data received:', data);
                     updateConnectionStatus(false);
@@ -829,9 +1356,12 @@
             // Count states and factions
             const stateCounts = {
                 'Idle': 0, 'Moving': 0, 'Working': 0,
-                'Eating': 0, 'Sleeping': 0, 'Fighting': 0
+                'Eating': 0, 'Sleeping': 0, 'Fighting': 0,
+                'Talking': 0, 'Patrolling': 0, 'Following': 0,
+                'Building': 0, 'Trading': 0
             };
-            let factionACoun = 0, factionBCount = 0;
+            let factionACount = 0, factionBCount = 0, unifiedCount = 0;
+            const uniqueFactions = new Set();
             
             agentData.forEach(agentInfo => {
                 currentAgentIds.add(agentInfo.id);
@@ -841,13 +1371,18 @@
                     stateCounts[agentInfo.state]++;
                 }
                 
-                // Count factions (simplified check)
-                if (agentInfo.faction && agentInfo.faction.includes('Kingdom')) {
-                    if (Math.random() > 0.5) { // Simplified faction detection
+                // Count factions
+                if (agentInfo.faction) {
+                    uniqueFactions.add(agentInfo.faction);
+                    // Simplified: first unique faction = A, second = B
+                    const factionArray = Array.from(uniqueFactions);
+                    if (factionArray.indexOf(agentInfo.faction) === 0) {
                         factionACount++;
-                    } else {
+                    } else if (factionArray.indexOf(agentInfo.faction) === 1) {
                         factionBCount++;
                     }
+                } else {
+                    unifiedCount++;
                 }
                 
                 if (!agents.has(agentInfo.id)) {
@@ -855,11 +1390,16 @@
                     const state = agentInfo.state || 'Idle';
                     const color = new THREE.Color(STATE_COLORS[state] || STATE_COLORS['Idle']);
                     
+                    // Get social class style
+                    const socialClass = agentInfo.social_class || 'Peasant';
+                    const classStyle = CLASS_STYLES[socialClass] || CLASS_STYLES['Peasant'];
+                    
                     // Create agent as a Group for easier hovering
                     const agentGroup = new THREE.Group();
                     
-                    // Agent body (capsule)
-                    const geometry = new THREE.CapsuleGeometry(0.5, 1.5, 8, 16);
+                    // Agent body (capsule) - size based on social class
+                    const scale = classStyle.scale;
+                    const geometry = new THREE.CapsuleGeometry(0.5 * scale, 1.5 * scale, 8, 16);
                     const material = new THREE.MeshStandardMaterial({
                         color: color,
                         roughness: 0.6,
@@ -873,22 +1413,42 @@
                     agentGroup.add(body);
                     
                     // Add a little glow sphere on top (head indicator)
-                    const headGeometry = new THREE.SphereGeometry(0.3, 8, 8);
+                    const headGeometry = new THREE.SphereGeometry(0.3 * scale, 8, 8);
                     const headMaterial = new THREE.MeshBasicMaterial({ 
                         color: color,
                         opacity: 0.8,
                         transparent: true
                     });
                     const head = new THREE.Mesh(headGeometry, headMaterial);
-                    head.position.y = 1.5;
+                    head.position.y = 1.5 * scale;
                     agentGroup.add(head);
+                    
+                    // Add social class icon above head
+                    const iconCanvas = document.createElement('canvas');
+                    iconCanvas.width = 128;
+                    iconCanvas.height = 128;
+                    const iconCtx = iconCanvas.getContext('2d');
+                    iconCtx.font = 'bold 100px Arial';
+                    iconCtx.textAlign = 'center';
+                    iconCtx.textBaseline = 'middle';
+                    iconCtx.fillText(classStyle.icon, 64, 64);
+                    
+                    const iconTexture = new THREE.CanvasTexture(iconCanvas);
+                    const classIconSprite = new THREE.Sprite(new THREE.SpriteMaterial({ 
+                        map: iconTexture,
+                        transparent: true,
+                        depthTest: false
+                    }));
+                    classIconSprite.scale.set(1.2 * scale, 1.2 * scale, 1);
+                    classIconSprite.position.y = 2.5 * scale;
+                    agentGroup.add(classIconSprite);
                     
                     // Add invisible collision box for easier hovering (covers full body + head)
                     const collisionBox = new THREE.Mesh(
-                        new THREE.BoxGeometry(1.5, 3, 1.5),
+                        new THREE.BoxGeometry(1.5 * scale, 3 * scale, 1.5 * scale),
                         new THREE.MeshBasicMaterial({ visible: false })
                     );
-                    collisionBox.position.y = 0.75; // Center of agent
+                    collisionBox.position.y = 0.75 * scale; // Center of agent
                     agentGroup.add(collisionBox);
                     
                     scene.add(agentGroup);
@@ -916,7 +1476,7 @@
                     const agent = agents.get(agentInfo.id);
                     agent.targetPos.set(agentInfo.x, agentInfo.y + 1, agentInfo.z);
                     
-                    // Update state and add combat effects
+                    // Update state and add visual effects
                     const newState = agentInfo.state || 'Idle';
                     if (agent.state !== newState) {
                         agent.state = newState;
@@ -941,6 +1501,13 @@
                             logActivity(`✅ ${agent.name} stopped fighting`, 'info');
                         }
                         
+                        // Conversation speech bubble
+                        if (newState === 'Talking') {
+                            addSpeechBubble(agent);
+                        } else if (agent.state === 'Talking' && newState !== 'Talking') {
+                            removeSpeechBubble(agent);
+                        }
+                        
                         if (newState !== 'Fighting') {
                             // Return to normal state color
                             agent.body.material.emissiveIntensity = 0.2;
@@ -963,10 +1530,32 @@
             document.getElementById('count-eating').textContent = stateCounts['Eating'];
             document.getElementById('count-sleeping').textContent = stateCounts['Sleeping'];
             document.getElementById('count-fighting').textContent = stateCounts['Fighting'];
+            document.getElementById('count-talking').textContent = stateCounts['Talking'];
+            document.getElementById('count-patrolling').textContent = stateCounts['Patrolling'];
+            document.getElementById('count-following').textContent = stateCounts['Following'];
+            document.getElementById('count-building').textContent = stateCounts['Building'];
+            document.getElementById('count-trading').textContent = stateCounts['Trading'];
             
-            // Update faction counts (rough estimate - needs proper faction tracking)
-            document.getElementById('faction-a-count').textContent = `${Math.floor(agentData.length / 2)} agents`;
-            document.getElementById('faction-b-count').textContent = `${Math.ceil(agentData.length / 2)} agents`;
+            // Update faction counts - show/hide based on whether factions exist
+            if (uniqueFactions.size === 0) {
+                // No factions - unified society
+                document.getElementById('unified-count').textContent = `${unifiedCount} agents`;
+                document.getElementById('faction-a-container').style.display = 'none';
+                document.getElementById('faction-b-container').style.display = 'none';
+            } else if (uniqueFactions.size === 1) {
+                // One faction formed
+                document.getElementById('unified-count').textContent = `${unifiedCount} unaligned`;
+                document.getElementById('faction-a-container').style.display = 'block';
+                document.getElementById('faction-a-count').textContent = `${factionACount} agents`;
+                document.getElementById('faction-b-container').style.display = 'none';
+            } else {
+                // Multiple factions - hide unified count
+                document.getElementById('unified-count').textContent = `${unifiedCount} unaligned`;
+                document.getElementById('faction-a-container').style.display = 'block';
+                document.getElementById('faction-a-count').textContent = `${factionACount} agents`;
+                document.getElementById('faction-b-container').style.display = 'block';
+                document.getElementById('faction-b-count').textContent = `${factionBCount} agents`;
+            }
             
             // Calculate casualties
             const casualties = initialAgentCount - agentData.length;
@@ -976,7 +1565,7 @@
             if (isInitialLoad && agentData.length > 0) {
                 isInitialLoad = false;
                 logActivity('🌍 World simulation loaded', 'info');
-                logActivity(`⚔️ War: Kingdom A vs Kingdom B`, 'combat');
+                logActivity('🏛️ Unified society - 100 citizens', 'info');
             }
             
             // Remove agents that no longer exist (died)
@@ -986,8 +1575,9 @@
                     showNotification('💀 Agent Died', agent.name);
                     logActivity(`💀 ${agent.name} has died`, 'death');
                     
-                    // Remove combat indicators if present
+                    // Remove visual indicators if present
                     removeCombatIndicators(agent);
+                    removeSpeechBubble(agent);
                     
                     // Create headstone/grave marker at death location
                     createHeadstone(agent.mesh.position, agent.name);
@@ -1143,6 +1733,426 @@
             document.getElementById('resource-iron').textContent = resourceCounts.iron;
         }
         
+        // Update markets in the scene
+        function updateMarkets(marketData) {
+            const currentMarketIds = new Set();
+            
+            marketData.forEach(marketInfo => {
+                currentMarketIds.add(marketInfo.id);
+                
+                if (!markets.has(marketInfo.id)) {
+                    // Create new market building
+                    const marketGroup = new THREE.Group();
+                    
+                    // Market building base
+                    const baseGeometry = new THREE.BoxGeometry(8, 0.5, 8);
+                    const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x6a4c3a });
+                    const base = new THREE.Mesh(baseGeometry, baseMaterial);
+                    base.position.y = 0.25;
+                    marketGroup.add(base);
+                    
+                    // Market building walls
+                    const wallGeometry = new THREE.BoxGeometry(7, 4, 7);
+                    const wallMaterial = new THREE.MeshStandardMaterial({ 
+                        color: marketInfo.market_type === 'food' ? 0x8b6914 : 0x7a5c4d,
+                        roughness: 0.8
+                    });
+                    const walls = new THREE.Mesh(wallGeometry, wallMaterial);
+                    walls.position.y = 2.5;
+                    walls.castShadow = true;
+                    marketGroup.add(walls);
+                    
+                    // Market roof
+                    const roofGeometry = new THREE.ConeGeometry(5.5, 2, 4);
+                    const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x8b0000 });
+                    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+                    roof.position.y = 5.5;
+                    roof.rotation.y = Math.PI / 4;
+                    roof.castShadow = true;
+                    marketGroup.add(roof);
+                    
+                    // Market sign/icon above
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 128;
+                    canvas.height = 128;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Draw market icon based on type
+                    let icon = '🏪';
+                    if (marketInfo.market_type === 'food') icon = '🍞';
+                    else if (marketInfo.market_type === 'materials') icon = '⚒️';
+                    else if (marketInfo.market_type === 'luxury') icon = '💎';
+                    else if (marketInfo.market_type === 'weapons') icon = '⚔️';
+                    
+                    ctx.font = 'bold 80px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(icon, 64, 64);
+                    
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const signSprite = new THREE.Sprite(new THREE.SpriteMaterial({ 
+                        map: texture,
+                        transparent: true
+                    }));
+                    signSprite.scale.set(2, 2, 1);
+                    signSprite.position.y = 7;
+                    marketGroup.add(signSprite);
+                    
+                    // Name label
+                    const nameCanvas = document.createElement('canvas');
+                    nameCanvas.width = 256;
+                    nameCanvas.height = 64;
+                    const nameCtx = nameCanvas.getContext('2d');
+                    nameCtx.fillStyle = 'white';
+                    nameCtx.strokeStyle = 'black';
+                    nameCtx.lineWidth = 3;
+                    nameCtx.font = 'bold 24px Arial';
+                    nameCtx.textAlign = 'center';
+                    nameCtx.textBaseline = 'middle';
+                    nameCtx.strokeText(marketInfo.name, 128, 32);
+                    nameCtx.fillText(marketInfo.name, 128, 32);
+                    
+                    const nameTexture = new THREE.CanvasTexture(nameCanvas);
+                    const nameSprite = new THREE.Sprite(new THREE.SpriteMaterial({ 
+                        map: nameTexture,
+                        transparent: true
+                    }));
+                    nameSprite.scale.set(4, 1, 1);
+                    nameSprite.position.y = 8.5;
+                    marketGroup.add(nameSprite);
+                    
+                    // Collision box for hovering
+                    const collisionBox = new THREE.Mesh(
+                        new THREE.BoxGeometry(10, 8, 10),
+                        new THREE.MeshBasicMaterial({ visible: false })
+                    );
+                    collisionBox.position.y = 3;
+                    marketGroup.add(collisionBox);
+                    
+                    marketGroup.position.set(marketInfo.x, marketInfo.y, marketInfo.z);
+                    scene.add(marketGroup);
+                    
+                    markets.set(marketInfo.id, {
+                        mesh: marketGroup,
+                        data: marketInfo
+                    });
+                }
+            });
+            
+            // Remove markets that no longer exist
+            markets.forEach((market, id) => {
+                if (!currentMarketIds.has(id)) {
+                    scene.remove(market.mesh);
+                    markets.delete(id);
+                }
+            });
+        }
+        
+        // Update buildings in the scene
+        function updateBuildings(buildingData) {
+            const currentBuildingIds = new Set();
+            
+            buildingData.forEach(buildingInfo => {
+                currentBuildingIds.add(buildingInfo.id);
+                
+                const existing = buildings.get(buildingInfo.id);
+                
+                if (!existing) {
+                    // Create new building
+                    const buildingGroup = new THREE.Group();
+                    
+                    // Building base/foundation
+                    const baseGeometry = new THREE.BoxGeometry(10, 0.3, 10);
+                    const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x4a4a4a });
+                    const base = new THREE.Mesh(baseGeometry, baseMaterial);
+                    base.position.y = 0.15;
+                    buildingGroup.add(base);
+                    
+                    // Building structure (height based on type)
+                    const buildingHeight = buildingInfo.building_type === 'Warehouse' ? 6 : 5;
+                    const wallGeometry = new THREE.BoxGeometry(9, buildingHeight, 9);
+                    const wallMaterial = new THREE.MeshStandardMaterial({ 
+                        color: buildingInfo.construction_progress < 1.0 ? 0x8a7a6a : 0x6a5a4a,
+                        roughness: 0.8,
+                        opacity: Math.max(0.3, buildingInfo.construction_progress),
+                        transparent: buildingInfo.construction_progress < 1.0
+                    });
+                    const walls = new THREE.Mesh(wallGeometry, wallMaterial);
+                    walls.position.y = buildingHeight / 2 + 0.3;
+                    walls.castShadow = true;
+                    buildingGroup.add(walls);
+                    
+                    // Roof (only if mostly complete)
+                    if (buildingInfo.construction_progress > 0.7) {
+                        const roofGeometry = new THREE.ConeGeometry(7, 2, 4);
+                        const roofMaterial = new THREE.MeshStandardMaterial({ 
+                            color: 0x8b4513,
+                            roughness: 0.9
+                        });
+                        const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+                        roof.position.y = buildingHeight + 1.3;
+                        roof.rotation.y = Math.PI / 4;
+                        roof.castShadow = true;
+                        buildingGroup.add(roof);
+                    }
+                    
+                    // Scaffolding for incomplete buildings
+                    if (buildingInfo.construction_progress < 1.0) {
+                        const scaffoldMaterial = new THREE.MeshBasicMaterial({ 
+                            color: 0xccaa44,
+                            wireframe: true
+                        });
+                        const scaffoldGeometry = new THREE.BoxGeometry(11, buildingHeight + 2, 11);
+                        const scaffold = new THREE.Mesh(scaffoldGeometry, scaffoldMaterial);
+                        scaffold.position.y = (buildingHeight + 2) / 2;
+                        buildingGroup.add(scaffold);
+                    }
+                    
+                    // Progress bar above building
+                    if (buildingInfo.construction_progress < 1.0) {
+                        const barWidth = 8;
+                        const barHeight = 0.5;
+                        
+                        // Background
+                        const bgGeometry = new THREE.PlaneGeometry(barWidth, barHeight);
+                        const bgMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
+                        const bg = new THREE.Mesh(bgGeometry, bgMaterial);
+                        bg.position.set(0, buildingHeight + 3, 0);
+                        buildingGroup.add(bg);
+                        
+                        // Progress fill
+                        const progress = buildingInfo.construction_progress;
+                        const fillGeometry = new THREE.PlaneGeometry(barWidth * progress, barHeight);
+                        const fillMaterial = new THREE.MeshBasicMaterial({ color: 0x44ff44 });
+                        const fill = new THREE.Mesh(fillGeometry, fillMaterial);
+                        fill.position.set(-barWidth/2 + (barWidth * progress) / 2, buildingHeight + 3, 0.01);
+                        buildingGroup.add(fill);
+                    }
+                    
+                    // Name label
+                    const nameCanvas = document.createElement('canvas');
+                    nameCanvas.width = 512;
+                    nameCanvas.height = 128;
+                    const nameCtx = nameCanvas.getContext('2d');
+                    nameCtx.fillStyle = 'white';
+                    nameCtx.strokeStyle = 'black';
+                    nameCtx.lineWidth = 4;
+                    nameCtx.font = 'bold 48px Arial';
+                    nameCtx.textAlign = 'center';
+                    nameCtx.textBaseline = 'middle';
+                    
+                    const labelText = buildingInfo.construction_progress < 1.0 ? 
+                        `🏗️ ${buildingInfo.name} (${Math.floor(buildingInfo.construction_progress * 100)}%)` :
+                        buildingInfo.name;
+                    
+                    nameCtx.strokeText(labelText, 256, 64);
+                    nameCtx.fillText(labelText, 256, 64);
+                    
+                    const nameTexture = new THREE.CanvasTexture(nameCanvas);
+                    const nameSprite = new THREE.Sprite(new THREE.SpriteMaterial({ 
+                        map: nameTexture,
+                        transparent: true
+                    }));
+                    nameSprite.scale.set(8, 2, 1);
+                    nameSprite.position.y = buildingHeight + 4.5;
+                    buildingGroup.add(nameSprite);
+                    
+                    // Collision box for hovering
+                    const collisionBox = new THREE.Mesh(
+                        new THREE.BoxGeometry(12, buildingHeight + 2, 12),
+                        new THREE.MeshBasicMaterial({ visible: false })
+                    );
+                    collisionBox.position.y = (buildingHeight + 2) / 2;
+                    buildingGroup.add(collisionBox);
+                    
+                    buildingGroup.position.set(buildingInfo.x, buildingInfo.y, buildingInfo.z);
+                    scene.add(buildingGroup);
+                    
+                    buildings.set(buildingInfo.id, {
+                        mesh: buildingGroup,
+                        data: buildingInfo
+                    });
+                    
+                    console.log(`🏗️ Building created: ${buildingInfo.name} (${Math.floor(buildingInfo.construction_progress * 100)}% complete)`);
+                } else {
+                    // Update existing building (mainly for construction progress)
+                    if (buildingInfo.construction_progress !== existing.data.construction_progress) {
+                        // Remove old building and recreate to show updated progress
+                        scene.remove(existing.mesh);
+                        buildings.delete(buildingInfo.id);
+                        
+                        // Will be recreated on next call
+                        currentBuildingIds.delete(buildingInfo.id);
+                        
+                        if (buildingInfo.construction_progress >= 1.0) {
+                            console.log(`✅ Building completed: ${buildingInfo.name}`);
+                        }
+                    }
+                }
+            });
+            
+            // Remove buildings that no longer exist
+            buildings.forEach((building, id) => {
+                if (!currentBuildingIds.has(id)) {
+                    scene.remove(building.mesh);
+                    buildings.delete(id);
+                }
+            });
+        }
+        
+        // Update currency information display
+        function updateCurrencyInfo(currencyInfo) {
+            if (currencyInfo.total_supply !== undefined) {
+                document.getElementById('currency-supply').textContent = Math.floor(currencyInfo.total_supply);
+                document.getElementById('currency-inflation').textContent = (currencyInfo.inflation_rate * 100).toFixed(2) + '%';
+                document.getElementById('currency-power').textContent = (currencyInfo.purchasing_power * 100).toFixed(1) + '%';
+                document.getElementById('currency-transactions').textContent = currencyInfo.transaction_count || 0;
+            }
+        }
+        
+        // Update economy dashboard with comprehensive data
+        async function updateEconomyDashboard() {
+            try {
+                // Fetch world state for resource and market data
+                const worldResponse = await fetch(`${API_URL}/api/world/state`);
+                const worldData = await worldResponse.json();
+                
+                // Calculate resource totals
+                const resourceTotals = {
+                    wood: 0,
+                    stone: 0,
+                    food: 0,
+                    iron: 0
+                };
+                
+                (worldData.resources || []).forEach(resource => {
+                    if (resource.resource_type === 'tree') resourceTotals.wood += resource.quantity;
+                    else if (resource.resource_type === 'rock') resourceTotals.stone += resource.quantity;
+                    else if (resource.resource_type === 'farm') resourceTotals.food += resource.quantity;
+                    else if (resource.resource_type === 'iron') resourceTotals.iron += resource.quantity;
+                });
+                
+                const agentCount = (worldData.agents || []).length;
+                
+                // Update currency metrics
+                const currencyInfo = worldData.currency_info || {};
+                document.getElementById('dash-money-supply').textContent = Math.floor(currencyInfo.total_supply || 20000).toLocaleString();
+                document.getElementById('dash-inflation').textContent = ((currencyInfo.inflation_rate || 0) * 100).toFixed(2) + '%';
+                document.getElementById('dash-purchasing').textContent = ((currencyInfo.purchasing_power || 1.0) * 100).toFixed(1) + '%';
+                document.getElementById('dash-transactions').textContent = (currencyInfo.transaction_count || 0).toLocaleString();
+                
+                // Calculate velocity
+                const velocity = currencyInfo.total_supply > 0 ? 
+                    (currencyInfo.transaction_count || 0) / currencyInfo.total_supply : 0;
+                document.getElementById('dash-velocity').textContent = velocity.toFixed(4);
+                
+                // Update market metrics
+                const marketData = worldData.markets || [];
+                document.getElementById('dash-market-count').textContent = marketData.length;
+                
+                const totalMarketTransactions = marketData.reduce((sum, m) => sum + (m.transaction_count || 0), 0);
+                document.getElementById('dash-market-transactions').textContent = totalMarketTransactions.toLocaleString();
+                
+                const avgReputation = marketData.length > 0 ?
+                    marketData.reduce((sum, m) => sum + (m.reputation || 50), 0) / marketData.length : 50;
+                document.getElementById('dash-market-reputation').textContent = avgReputation.toFixed(1);
+                
+                // Count active traders
+                const traderCount = (worldData.agents || []).filter(a => a.state === 'Trading').length;
+                document.getElementById('dash-active-traders').textContent = traderCount;
+                
+                // Update resource supply
+                document.getElementById('dash-supply-wood').textContent = resourceTotals.wood.toLocaleString();
+                document.getElementById('dash-supply-stone').textContent = resourceTotals.stone.toLocaleString();
+                document.getElementById('dash-supply-food').textContent = resourceTotals.food.toLocaleString();
+                document.getElementById('dash-supply-iron').textContent = resourceTotals.iron.toLocaleString();
+                
+                // Update resource prices (mock data for now - will be dynamic later)
+                const prices = {
+                    wood: 5.0,
+                    stone: 3.0,
+                    food: 10.0,
+                    iron: 15.0,
+                    weapon: 50.0
+                };
+                
+                // Update price displays and bars (scale to max 50 for visualization)
+                const maxPrice = 50.0;
+                document.getElementById('price-wood').textContent = prices.wood.toFixed(1);
+                document.getElementById('price-bar-wood').style.width = (prices.wood / maxPrice * 100) + '%';
+                
+                document.getElementById('price-stone').textContent = prices.stone.toFixed(1);
+                document.getElementById('price-bar-stone').style.width = (prices.stone / maxPrice * 100) + '%';
+                
+                document.getElementById('price-food').textContent = prices.food.toFixed(1);
+                document.getElementById('price-bar-food').style.width = (prices.food / maxPrice * 100) + '%';
+                
+                document.getElementById('price-iron').textContent = prices.iron.toFixed(1);
+                document.getElementById('price-bar-iron').style.width = (prices.iron / maxPrice * 100) + '%';
+                
+                document.getElementById('price-weapon').textContent = prices.weapon.toFixed(1);
+                document.getElementById('price-bar-weapon').style.width = (prices.weapon / maxPrice * 100) + '%';
+                
+                // Calculate per capita resources
+                const foodPerCapita = agentCount > 0 ? (resourceTotals.food / agentCount).toFixed(1) : 0;
+                const materialsPerCapita = agentCount > 0 ? 
+                    ((resourceTotals.wood + resourceTotals.stone + resourceTotals.iron) / agentCount).toFixed(1) : 0;
+                
+                document.getElementById('dash-food-per-capita').textContent = foodPerCapita;
+                document.getElementById('dash-materials-per-capita').textContent = materialsPerCapita;
+                
+                // Update economic health indicators
+                const foodPC = parseFloat(foodPerCapita);
+                const matPC = parseFloat(materialsPerCapita);
+                
+                let economicStatus = 'Healthy';
+                let resourceStress = 'Low';
+                
+                if (foodPC < 10 || matPC < 15) {
+                    economicStatus = 'Critical';
+                    resourceStress = 'Extreme';
+                    document.getElementById('dash-economic-status').className = 'dashboard-metric-value metric-negative';
+                    document.getElementById('dash-resource-stress').className = 'dashboard-metric-value metric-negative';
+                } else if (foodPC < 20 || matPC < 30) {
+                    economicStatus = 'Stressed';
+                    resourceStress = 'High';
+                    document.getElementById('dash-economic-status').className = 'dashboard-metric-value metric-neutral';
+                    document.getElementById('dash-resource-stress').className = 'dashboard-metric-value metric-neutral';
+                } else {
+                    document.getElementById('dash-economic-status').className = 'dashboard-metric-value metric-positive';
+                    document.getElementById('dash-resource-stress').className = 'dashboard-metric-value metric-positive';
+                }
+                
+                document.getElementById('dash-economic-status').textContent = economicStatus;
+                document.getElementById('dash-resource-stress').textContent = resourceStress;
+                
+                // Market activity
+                const marketActivity = traderCount > 5 ? 'Very Active' : traderCount > 0 ? 'Active' : 'Quiet';
+                document.getElementById('dash-market-activity').textContent = marketActivity;
+                
+                // Update market details list
+                const marketDetailsList = document.getElementById('market-details-list');
+                marketDetailsList.innerHTML = marketData.map(m => `
+                    <div class="dashboard-metric">
+                        <span class="dashboard-metric-label">${m.name}</span>
+                        <span class="dashboard-metric-value" style="font-size: 12px;">${m.transaction_count || 0} txns</span>
+                    </div>
+                `).join('');
+                
+                // Color per-capita values based on thresholds
+                const foodPerCapitaEl = document.getElementById('dash-food-per-capita');
+                foodPerCapitaEl.className = foodPC < 10 ? 'dashboard-metric-value metric-negative' :
+                    foodPC < 20 ? 'dashboard-metric-value metric-neutral' : 'dashboard-metric-value metric-positive';
+                
+                const matPerCapitaEl = document.getElementById('dash-materials-per-capita');
+                matPerCapitaEl.className = matPC < 15 ? 'dashboard-metric-value metric-negative' :
+                    matPC < 30 ? 'dashboard-metric-value metric-neutral' : 'dashboard-metric-value metric-positive';
+                
+            } catch (error) {
+                console.error('Error updating economy dashboard:', error);
+            }
+        }
+        
         // Animation loop
         let lastTime = Date.now();
         let frameCount = 0;
@@ -1278,6 +2288,22 @@
                 }
             }
             
+            // Check for market intersections
+            const marketMeshes = Array.from(markets.values()).map(m => m.mesh);
+            const marketIntersects = raycaster.intersectObjects(marketMeshes, true);
+            
+            if (marketIntersects.length > 0) {
+                const hoveredMesh = marketIntersects[0].object.parent || marketIntersects[0].object;
+                
+                // Find which market this mesh belongs to
+                for (const [id, market] of markets) {
+                    if (market.mesh === hoveredMesh) {
+                        showMarketTooltip(market, event.clientX, event.clientY);
+                        return;
+                    }
+                }
+            }
+            
             hideTooltip();
         }
         
@@ -1290,8 +2316,16 @@
             const tooltip = document.getElementById('tooltip');
             const data = agent.agentData || {};
             
+            // Get social class icon
+            const socialClass = data.social_class || 'Peasant';
+            const classStyle = CLASS_STYLES[socialClass] || CLASS_STYLES['Peasant'];
+            
             tooltip.innerHTML = `
-                <h4>${agent.name}</h4>
+                <h4>${classStyle.icon} ${agent.name}</h4>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Class:</span>
+                    <span class="tooltip-value">${socialClass}</span>
+                </div>
                 <div class="tooltip-row">
                     <span class="tooltip-label">State:</span>
                     <span class="tooltip-value">${agent.state}</span>
@@ -1300,16 +2334,18 @@
                     <span class="tooltip-label">Faction:</span>
                     <span class="tooltip-value">${agent.faction ? '⚔️ At War' : 'None'}</span>
                 </div>
+                ${data.leader_id ? `
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Leader:</span>
+                    <span class="tooltip-value">👑 Following</span>
+                </div>
+                ` : ''}
                 <div class="tooltip-row">
                     <span class="tooltip-label">Position:</span>
                     <span class="tooltip-value">
                         ${agent.mesh.position.x.toFixed(1)}, 
                         ${agent.mesh.position.z.toFixed(1)}
                     </span>
-                </div>
-                <div class="tooltip-row">
-                    <span class="tooltip-label">ID:</span>
-                    <span class="tooltip-value" style="font-size: 9px;">${data.id || 'Unknown'}</span>
                 </div>
             `;
             
@@ -1349,6 +2385,51 @@
                 <div class="tooltip-row">
                     <span class="tooltip-label">ID:</span>
                     <span class="tooltip-value" style="font-size: 9px;">${data.id || 'Unknown'}</span>
+                </div>
+            `;
+            
+            tooltip.style.left = (x + 15) + 'px';
+            tooltip.style.top = (y + 15) + 'px';
+            tooltip.style.display = 'block';
+        }
+        
+        // Show tooltip for market
+        function showMarketTooltip(market, x, y) {
+            const tooltip = document.getElementById('tooltip');
+            const data = market.data || {};
+            
+            // Market type icons
+            const marketIcons = {
+                'general': '🏪',
+                'food': '🍞',
+                'materials': '⚒️',
+                'luxury': '💎',
+                'weapons': '⚔️'
+            };
+            
+            const icon = marketIcons[data.market_type] || '🏪';
+            const typeName = (data.market_type || 'general').charAt(0).toUpperCase() + (data.market_type || 'general').slice(1);
+            
+            tooltip.innerHTML = `
+                <h4>${icon} ${data.name || 'Market'}</h4>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Type:</span>
+                    <span class="tooltip-value">${typeName} Market</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Transactions:</span>
+                    <span class="tooltip-value">${data.transaction_count || 0}</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Reputation:</span>
+                    <span class="tooltip-value">${(data.reputation || 50).toFixed(1)}/100</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Position:</span>
+                    <span class="tooltip-value">
+                        ${(data.x || 0).toFixed(1)}, 
+                        ${(data.z || 0).toFixed(1)}
+                    </span>
                 </div>
             `;
             
@@ -1502,6 +2583,342 @@
             }, 10000);
         };
         
+        window.testBuilding = function() {
+            showNotification('🏗️ Building System', 'An incomplete "Test Construction Site" exists at (0, -35)');
+            logActivity(`🏗️ Building system active - Builders auto-construct incomplete buildings`, 'info');
+            
+            alert('🏗️ Building System is Active!\n\n' +
+                  '✅ There\'s a "Test Construction Site" at coordinates (0, -35)\n' +
+                  '✅ Builders (Job::Builder) automatically find incomplete buildings\n' +
+                  '✅ Construction progress: 2% per builder per second\n' +
+                  '✅ Watch the progress bar above the building!\n' +
+                  '✅ Scaffolding disappears when building is complete\n\n' +
+                  'Look for the building with wireframe scaffolding and green progress bar!');
+            
+            // Pan camera to the construction site
+            camera.position.set(0, 30, -20);
+            camera.lookAt(0, 0, -35);
+            controls.target.set(0, 0, -35);
+            controls.update();
+        };
+        
+        window.toggleEconomyDashboard = function() {
+            const dashboard = document.getElementById('economy-dashboard');
+            dashboard.classList.toggle('visible');
+            
+            // Update dashboard data when opened
+            if (dashboard.classList.contains('visible')) {
+                updateEconomyDashboard();
+            }
+        };
+        
+        // Open trading chart for a specific resource
+        window.openTradingChart = function(resourceType, resourceName) {
+            currentTradingResource = resourceType;
+            
+            const modal = document.getElementById('trading-chart-modal');
+            modal.classList.add('visible');
+            
+            document.getElementById('trading-chart-title').textContent = `📈 ${resourceName} Trading Chart`;
+            
+            // Start updating price history
+            updateTradingChart();
+            
+            // Update chart every 2 seconds
+            if (priceHistoryInterval) clearInterval(priceHistoryInterval);
+            priceHistoryInterval = setInterval(updateTradingChart, 2000);
+        };
+        
+        window.closeTradingChart = function() {
+            const modal = document.getElementById('trading-chart-modal');
+            modal.classList.remove('visible');
+            currentTradingResource = null;
+            
+            // Stop updating
+            if (priceHistoryInterval) {
+                clearInterval(priceHistoryInterval);
+                priceHistoryInterval = null;
+            }
+        };
+        
+        // Calculate price for a specific resource based on current supply
+        function calculateResourcePrice(resourceType, resourceTotals) {
+            // Base prices
+            const basePrices = {
+                wood: 5.0,
+                stone: 3.0,
+                food: 10.0,
+                iron: 15.0,
+                weapon: 50.0
+            };
+            
+            // Calculate dynamic price based on supply (simple model)
+            const initialSupply = {
+                wood: 5000,   // Rough starting amount
+                stone: 4000,
+                food: 6000,
+                iron: 3000
+            };
+            
+            let currentPrice = basePrices[resourceType] || 5.0;
+            
+            // Price increases as supply decreases (supply/demand)
+            if (resourceType !== 'weapon') {
+                const supply = resourceTotals[resourceType] || 0;
+                const initial = initialSupply[resourceType] || 1000;
+                const scarcityFactor = initial / Math.max(supply, 100); // Prevent division by zero
+                currentPrice = basePrices[resourceType] * scarcityFactor;
+                currentPrice = Math.max(currentPrice, basePrices[resourceType] * 0.5); // Floor at 50%
+                currentPrice = Math.min(currentPrice, basePrices[resourceType] * 5.0); // Cap at 500%
+            }
+            
+            return currentPrice;
+        }
+        
+        // Track all resource prices in the background (runs continuously)
+        async function trackAllResourcePrices() {
+            try {
+                // Fetch world state for resource calculations
+                const worldResponse = await fetch(`${API_URL}/api/world/state`);
+                const worldData = await worldResponse.json();
+                
+                // Calculate current resource supply
+                const resourceTotals = {
+                    wood: 0,
+                    stone: 0,
+                    food: 0,
+                    iron: 0
+                };
+                
+                (worldData.resources || []).forEach(resource => {
+                    if (resource.resource_type === 'tree') resourceTotals.wood += resource.quantity;
+                    else if (resource.resource_type === 'rock') resourceTotals.stone += resource.quantity;
+                    else if (resource.resource_type === 'farm') resourceTotals.food += resource.quantity;
+                    else if (resource.resource_type === 'iron') resourceTotals.iron += resource.quantity;
+                });
+                
+                const timestamp = Date.now();
+                
+                // Calculate and store price for each resource
+                ['wood', 'stone', 'food', 'iron', 'weapon'].forEach(resourceType => {
+                    const price = calculateResourcePrice(resourceType, resourceTotals);
+                    
+                    const history = priceHistory[resourceType];
+                    history.push({
+                        time: timestamp,
+                        price: price
+                    });
+                    
+                    // Keep limited history
+                    if (history.length > MAX_PRICE_HISTORY) {
+                        history.shift();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error tracking prices:', error);
+            }
+        }
+        
+        // Start background price tracking
+        function startBackgroundPriceTracking() {
+            if (backgroundPriceTracking) {
+                clearInterval(backgroundPriceTracking);
+            }
+            
+            // Track prices immediately
+            trackAllResourcePrices();
+            
+            // Then track every 2 seconds
+            backgroundPriceTracking = setInterval(trackAllResourcePrices, 2000);
+            
+            console.log('📈 Background price tracking started (every 2 seconds)');
+        }
+        
+        // Update trading chart display (uses pre-tracked history from background)
+        async function updateTradingChart() {
+            if (!currentTradingResource) return;
+            
+            try {
+                // Get the already-tracked price history (built by background tracking)
+                const history = priceHistory[currentTradingResource];
+                
+                if (history.length === 0) {
+                    console.log('No price history yet for ' + currentTradingResource);
+                    return;
+                }
+                
+                // Calculate stats from existing history
+                const prices = history.map(h => h.price);
+                const currentPrice = prices[prices.length - 1] || 0;
+                const highPrice = Math.max(...prices);
+                const lowPrice = Math.min(...prices);
+                const firstPrice = history[0]?.price || currentPrice;
+                const priceChange = firstPrice > 0 ? ((currentPrice - firstPrice) / firstPrice * 100) : 0;
+                
+                // Update stats display
+                document.getElementById('trading-current-price').textContent = currentPrice.toFixed(2);
+                document.getElementById('trading-high-price').textContent = highPrice.toFixed(2);
+                document.getElementById('trading-low-price').textContent = lowPrice.toFixed(2);
+                
+                const changeEl = document.getElementById('trading-price-change');
+                changeEl.textContent = (priceChange >= 0 ? '+' : '') + priceChange.toFixed(2) + '%';
+                changeEl.className = priceChange >= 0 ? 'trading-stat-value metric-positive' : 'trading-stat-value metric-negative';
+                
+                // Draw the chart with all historical data
+                drawPriceChart(history);
+                
+            } catch (error) {
+                console.error('Error updating trading chart:', error);
+            }
+        }
+        
+        // Draw price history chart (line chart like stock trading)
+        function drawPriceChart(history) {
+            const canvas = document.getElementById('price-history-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to match container
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth - 40;
+            canvas.height = container.clientHeight - 40;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.0)';
+            ctx.fillRect(0, 0, width, height);
+            
+            if (history.length < 2) {
+                // Not enough data yet
+                ctx.fillStyle = '#888';
+                ctx.font = '24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Collecting price data...', width / 2, height / 2);
+                return;
+            }
+            
+            // Find min/max for scaling
+            const prices = history.map(h => h.price);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const priceRange = maxPrice - minPrice || 1;
+            
+            // Add padding
+            const padding = 50;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            // Draw grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+                
+                // Price labels
+                const price = maxPrice - (priceRange / 5) * i;
+                ctx.fillStyle = '#888';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(price.toFixed(2), padding - 10, y + 4);
+            }
+            
+            // Draw price line
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            history.forEach((point, index) => {
+                const x = padding + (chartWidth / (history.length - 1)) * index;
+                const normalizedPrice = (point.price - minPrice) / priceRange;
+                const y = padding + chartHeight - (normalizedPrice * chartHeight);
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            // Fill area under line
+            ctx.lineTo(width - padding, height - padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(243, 156, 18, 0.2)';
+            ctx.fill();
+            
+            // Draw data points
+            ctx.fillStyle = '#f39c12';
+            history.forEach((point, index) => {
+                const x = padding + (chartWidth / (history.length - 1)) * index;
+                const normalizedPrice = (point.price - minPrice) / priceRange;
+                const y = padding + chartHeight - (normalizedPrice * chartHeight);
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Current price indicator (last point, larger)
+            if (history.length > 0) {
+                const lastPoint = history[history.length - 1];
+                const x = padding + chartWidth;
+                const normalizedPrice = (lastPoint.price - minPrice) / priceRange;
+                const y = padding + chartHeight - (normalizedPrice * chartHeight);
+                
+                ctx.fillStyle = '#2ecc71';
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Price label
+                ctx.fillStyle = '#2ecc71';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(lastPoint.price.toFixed(2), x + 10, y + 5);
+            }
+            
+            // Time axis labels with actual timestamps
+            ctx.fillStyle = '#888';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            if (history.length > 0) {
+                const firstTime = history[0].time;
+                const lastTime = history[history.length - 1].time;
+                const timeSpanSeconds = Math.floor((lastTime - firstTime) / 1000);
+                const minutes = Math.floor(timeSpanSeconds / 60);
+                const seconds = timeSpanSeconds % 60;
+                
+                const timeSpanText = minutes > 0 ? 
+                    `${minutes}m ${seconds}s` : 
+                    `${seconds}s`;
+                
+                ctx.fillText(`← ${timeSpanText} ago`, padding + 60, height - padding + 20);
+                ctx.fillText('Now →', width - padding - 50, height - padding + 20);
+            }
+            
+            // Chart title with time range
+            ctx.fillStyle = '#f39c12';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            
+            const dataPoints = history.length;
+            const timeRangeMinutes = Math.floor((dataPoints * 2) / 60); // 2s per update
+            const timeRangeText = timeRangeMinutes > 0 ? 
+                `${timeRangeMinutes}m ${dataPoints % 30 * 2}s` : 
+                `${dataPoints * 2}s`;
+            
+            ctx.fillText(`Price History - ${dataPoints} data points (~${timeRangeText} range)`, width / 2, 25);
+        }
+        
         // Show notification toast
         function showNotification(title, body) {
             const notification = document.createElement('div');
@@ -1595,6 +3012,69 @@
                 agent.mesh.remove(agent.combatIndicators.swordSprite);
                 agent.mesh.remove(agent.combatIndicators.ring);
                 agent.combatIndicators = null;
+            }
+        }
+        
+        // Add speech bubble for talking agents
+        function addSpeechBubble(agent) {
+            // Don't add if already has bubble
+            if (agent.speechBubble) return;
+            
+            // Create speech bubble sprite
+            const bubbleCanvas = document.createElement('canvas');
+            bubbleCanvas.width = 256;
+            bubbleCanvas.height = 128;
+            const ctx = bubbleCanvas.getContext('2d');
+            
+            // Draw speech bubble background
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 4;
+            
+            // Rounded rectangle for bubble
+            const x = 20, y = 10, w = 216, h = 80, r = 15;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Speech bubble tail (triangle pointing down)
+            ctx.beginPath();
+            ctx.moveTo(100, 90);
+            ctx.lineTo(120, 110);
+            ctx.lineTo(140, 90);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Add text dots to indicate talking
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 40px Arial';
+            ctx.fillText('💬', 128, 50);
+            
+            const texture = new THREE.CanvasTexture(bubbleCanvas);
+            const bubbleSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                opacity: 0.9
+            }));
+            bubbleSprite.scale.set(2, 1, 1);
+            bubbleSprite.position.y = 3.5;
+            agent.mesh.add(bubbleSprite);
+            
+            agent.speechBubble = bubbleSprite;
+        }
+        
+        // Remove speech bubble
+        function removeSpeechBubble(agent) {
+            if (agent.speechBubble) {
+                agent.mesh.remove(agent.speechBubble);
+                agent.speechBubble = null;
             }
         }
         
@@ -1788,6 +3268,9 @@
         
         // Start the visualizer
         init();
+        
+        // Start background price tracking immediately
+        startBackgroundPriceTracking();
         
         console.log('🌍 World Simulation Visualizer Started');
         console.log('API: ' + API_URL);

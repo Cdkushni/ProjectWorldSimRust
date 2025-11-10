@@ -1,6 +1,16 @@
 use serde::{Deserialize, Serialize};
-use world_sim_core::{AgentId, Attributes, GridCoord, Position, Skill, Trait};
+use std::collections::HashMap;
+use world_sim_core::{AgentId, Attributes, GridCoord, Position, ResourceType, Skill, Trait};
 use crate::{AgentDomain, PersonalityProfile, SkillDatabase};
+
+/// Resources an agent is carrying to a construction site
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BuildingResources {
+    pub wood: u32,
+    pub stone: u32,
+    pub iron: u32,
+    pub target_building_id: uuid::Uuid, // Which building they're delivering to
+}
 
 /// The core agent structure - represents a single individual
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17,6 +27,12 @@ pub struct SimAgent {
     pub job: Job,
     pub social_class: SocialClass,
     pub leader_id: Option<AgentId>, // For followers (knights follow king, etc.)
+    
+    // Economic system
+    pub wallet: f64,                                  // Money owned
+    pub inventory: HashMap<ResourceType, u32>,        // Resources carried/owned
+    pub needs: HashMap<ResourceType, u32>,            // What they want to buy
+    pub carrying_resources: Option<BuildingResources>, // Resources being carried to build site
 }
 
 /// Current behavioral state
@@ -80,6 +96,39 @@ impl SimAgent {
             }
         };
         
+        // Initial wallet based on social class
+        let wallet = match social_class {
+            SocialClass::King => 1000.0,
+            SocialClass::Noble => 500.0,
+            SocialClass::Knight => 200.0,
+            SocialClass::Merchant | SocialClass::Burgher => 150.0,
+            SocialClass::Soldier => 100.0,
+            SocialClass::Cleric => 80.0,
+            SocialClass::Peasant => 50.0,
+        };
+        
+        // Basic needs for all agents
+        let mut needs = HashMap::new();
+        needs.insert(ResourceType::Food, 5);  // Everyone needs food
+        
+        // Job-specific needs
+        match job {
+            Job::Builder => {
+                needs.insert(ResourceType::Wood, 10);
+                needs.insert(ResourceType::Stone, 10);
+            }
+            Job::Farmer => {
+                needs.insert(ResourceType::Wood, 2); // For tools
+            }
+            Job::Woodcutter => {
+                needs.insert(ResourceType::Iron, 1); // For axe
+            }
+            Job::Miner => {
+                needs.insert(ResourceType::Iron, 1); // For pickaxe
+            }
+            _ => {}
+        }
+        
         Self {
             id: AgentId::new(),
             name,
@@ -93,6 +142,10 @@ impl SimAgent {
             job,
             social_class,
             leader_id: None,
+            wallet,
+            inventory: HashMap::new(),
+            needs,
+            carrying_resources: None,
         }
     }
 

@@ -42,6 +42,11 @@ impl PoliticalLayer {
     pub fn get_faction(&self, id: FactionId) -> Option<Faction> {
         self.factions.read().get(&id).cloned()
     }
+    
+    /// Get all factions
+    pub fn get_all_factions(&self) -> Vec<Faction> {
+        self.factions.read().values().cloned().collect()
+    }
 
     /// Add agent to faction
     pub fn add_member(&self, faction_id: FactionId, agent_id: AgentId) {

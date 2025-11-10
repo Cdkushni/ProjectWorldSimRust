@@ -23,6 +23,9 @@ pub struct SimulationMetrics {
 pub struct WorldState {
     pub agents: Vec<AgentState>,
     pub resources: Vec<ResourceState>,
+    pub markets: Vec<MarketState>,
+    pub buildings: Vec<BuildingState>,
+    pub currency_info: CurrencyInfo,
     pub terrain_size: i32,
 }
 
@@ -37,6 +40,42 @@ pub struct ResourceState {
     pub quantity: u32,
 }
 
+/// Market state for visualization
+#[derive(Clone, Serialize)]
+pub struct MarketState {
+    pub id: String,
+    pub name: String,
+    pub market_type: String,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+    pub transaction_count: u64,
+    pub reputation: f32,
+}
+
+/// Building state for visualization
+#[derive(Clone, Serialize)]
+pub struct BuildingState {
+    pub id: String,
+    pub building_type: String,
+    pub name: String,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+    pub construction_progress: f32,
+    pub health: f32,
+    pub owner: String,
+}
+
+/// Currency information for visualization
+#[derive(Clone, Serialize, Default)]
+pub struct CurrencyInfo {
+    pub total_supply: f64,
+    pub inflation_rate: f64,
+    pub purchasing_power: f64,
+    pub transaction_count: u64,
+}
+
 /// Agent state for visualization
 #[derive(Clone, Serialize)]
 pub struct AgentState {
@@ -47,6 +86,8 @@ pub struct AgentState {
     pub name: String,
     pub state: String,
     pub faction: Option<String>,
+    pub social_class: String,
+    pub leader_id: Option<String>,
 }
 
 /// Admin API server
