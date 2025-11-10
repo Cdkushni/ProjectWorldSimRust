@@ -234,6 +234,10 @@ impl MarketSystem {
         self.markets.values().collect()
     }
     
+    pub fn get_all_markets_mut(&mut self) -> Vec<&mut Market> {
+        self.markets.values_mut().collect()
+    }
+    
     pub fn find_nearest_market(&self, position: &Position, market_type: Option<MarketType>) -> Option<&Market> {
         self.markets
             .values()

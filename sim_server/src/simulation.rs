@@ -46,6 +46,7 @@ pub struct Simulation {
     politics: Arc<PoliticalLayer>,
     markets: Arc<RwLock<world_sim_societal::MarketSystem>>,
     currency: Arc<RwLock<world_sim_societal::CurrencySystem>>,
+    kingdoms: Arc<RwLock<world_sim_societal::KingdomManager>>,
     
     // Meta layer
     dungeon_master: Arc<DungeonMaster>,
@@ -55,6 +56,9 @@ pub struct Simulation {
     start_time: Instant,
     metrics: Arc<RwLock<SimulationMetrics>>,
     world_state: Arc<RwLock<WorldState>>,
+    
+    // Economic timing
+    wage_timer: std::sync::atomic::AtomicU64, // Seconds since last wage payment
 }
 
 impl Simulation {
@@ -199,6 +203,7 @@ impl Simulation {
         info!("Created {} public markets", market_system.get_all_markets().len());
         
         let markets = Arc::new(RwLock::new(market_system));
+        let kingdoms = Arc::new(RwLock::new(world_sim_societal::KingdomManager::new()));
         
         // Create initial public buildings - neutral, community-owned
         info!("Creating initial public buildings...");
@@ -263,11 +268,13 @@ impl Simulation {
             politics,
             markets,
             currency,
+            kingdoms,
             dungeon_master,
             sim_time: SimTime::new(),
             start_time: Instant::now(),
             metrics,
             world_state,
+            wage_timer: std::sync::atomic::AtomicU64::new(0),
         })
     }
     
@@ -819,7 +826,249 @@ impl Simulation {
             };
             
             agent.state = new_state;
-        });
+        }); // update_living_agents completes here, drops lock
+        
+        // ECONOMIC SYSTEM: Resource harvesting stores in agent inventory
+        let mut agents = self.lifecycle.get_agents_mut(); // Now safe to acquire lock
+        let resource_nodes = self.resources.get_nodes();
+        
+        for agent in agents.iter_mut() {
+            // Only harvest if agent is Working near a resource node
+            if matches!(agent.state, AgentState::Working { .. }) {
+                let harvest_type = match agent.job {
+                    Job::Woodcutter => Some(ResourceNodeType::Tree),
+                    Job::Miner => Some(ResourceNodeType::Rock),
+                    Job::Farmer => Some(ResourceNodeType::Farm),
+                    _ => None,
+                };
+                
+                if let Some(node_type) = harvest_type {
+                    // Find nearest resource of the right type
+                    if let Some(node) = resource_nodes.iter()
+                        .filter(|n| n.resource_type == node_type && n.quantity > 0)
+                        .min_by(|a, b| {
+                            let dist_a = a.position.distance_to(&agent.position);
+                            let dist_b = b.position.distance_to(&agent.position);
+                            dist_a.partial_cmp(&dist_b).unwrap_or(std::cmp::Ordering::Equal)
+                        })
+                    {
+                        let dist = node.position.distance_to(&agent.position);
+                        
+                        // Only harvest if close enough (< 3.0 units)
+                        if dist < 3.0 {
+                            // Harvest 5 units per second (if capacity allows)
+                            let harvest_amount = 5;
+                            
+                            // Check carrying capacity
+                            if agent.can_carry_more(harvest_amount) {
+                                if let Some(harvested) = self.resources.harvest(node.id, harvest_amount) {
+                                    // Convert node type to resource type and store in inventory
+                                    let resource_type = match node.resource_type {
+                                        ResourceNodeType::Tree => world_sim_core::ResourceType::Wood,
+                                        ResourceNodeType::Rock => world_sim_core::ResourceType::Stone,
+                                        ResourceNodeType::Farm => world_sim_core::ResourceType::Food,
+                                        ResourceNodeType::IronDeposit => world_sim_core::ResourceType::Iron,
+                                    };
+                                    
+                                    *agent.inventory.entry(resource_type).or_insert(0) += harvested;
+                                }
+                            } else {
+                                // Inventory full - go to market to sell
+                                agent.state = AgentState::Idle;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        drop(agents); // CRITICAL: Drop write lock before next section
+        
+        // ECONOMIC SYSTEM: Agent trading behavior at markets
+        let mut markets_lock = self.markets.write();
+        let agents = self.lifecycle.get_agents();
+        
+        for agent in agents.iter() {
+            // Only trade if at a market (in Trading state)
+            if matches!(agent.state, AgentState::Trading { .. }) {
+                // Find nearest market
+                if let Some(market) = markets_lock.find_nearest_market(&agent.position, None) {
+                    let dist = agent.position.distance_to(&market.position);
+                    
+                    // Only trade if close enough (< 6.0 units)
+                    if dist < 6.0 {
+                        let market_id = market.id;
+                        
+                        // Find the market to place orders
+                        if let Some(market) = markets_lock.get_market_mut(market_id) {
+                            // BUY what they need
+                            for (resource_type, needed_amount) in &agent.needs {
+                                let current_amount = agent.inventory.get(resource_type).copied().unwrap_or(0);
+                                
+                                if current_amount < *needed_amount {
+                                    let deficit = needed_amount - current_amount;
+                                    
+                                    // Calculate max price willing to pay (higher for essentials)
+                                    let base_price = match resource_type {
+                                        world_sim_core::ResourceType::Food => 10.0,
+                                        world_sim_core::ResourceType::Wood => 5.0,
+                                        world_sim_core::ResourceType::Stone => 3.0,
+                                        world_sim_core::ResourceType::Iron => 15.0,
+                                        _ => 5.0,
+                                    };
+                                    
+                                    // Pay more if desperate (low inventory)
+                                    let desperation = if current_amount == 0 { 2.0 } else { 1.5 };
+                                    let max_price = base_price * desperation;
+                                    
+                                    // Only buy if can afford
+                                    if agent.wallet >= max_price * deficit as f64 {
+                                        use world_sim_societal::{TradeOrder, OrderType};
+                                        
+                                        market.place_buy_order(TradeOrder {
+                                            id: uuid::Uuid::new_v4(),
+                                            agent_id: agent.id,
+                                            resource: *resource_type,
+                                            quantity: deficit,
+                                            price_per_unit: max_price,
+                                            order_type: OrderType::Buy,
+                                        });
+                                    }
+                                }
+                            }
+                            
+                            // SELL excess inventory
+                            for (resource_type, quantity) in &agent.inventory {
+                                let needed = agent.needs.get(resource_type).copied().unwrap_or(0);
+                                
+                                // Keep 2x what needed, sell the rest
+                                if *quantity > needed * 2 {
+                                    let excess = quantity - (needed * 2);
+                                    
+                                    // Calculate asking price
+                                    let base_price = match resource_type {
+                                        world_sim_core::ResourceType::Food => 10.0,
+                                        world_sim_core::ResourceType::Wood => 5.0,
+                                        world_sim_core::ResourceType::Stone => 3.0,
+                                        world_sim_core::ResourceType::Iron => 15.0,
+                                        _ => 5.0,
+                                    };
+                                    
+                                    // Merchants sell for profit
+                                    let profit_margin = if matches!(agent.social_class, world_sim_agents::SocialClass::Merchant | world_sim_agents::SocialClass::Burgher) {
+                                        1.2 // 20% markup
+                                    } else {
+                                        1.0 // At base price
+                                    };
+                                    
+                                    let asking_price = base_price * profit_margin;
+                                    
+                                    use world_sim_societal::{TradeOrder, OrderType};
+                                    
+                                    market.place_sell_order(TradeOrder {
+                                        id: uuid::Uuid::new_v4(),
+                                        agent_id: agent.id,
+                                        resource: *resource_type,
+                                        quantity: excess,
+                                        price_per_unit: asking_price,
+                                        order_type: OrderType::Sell,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        drop(agents); // CRITICAL: Drop read lock before getting write lock
+        
+        // ECONOMIC SYSTEM: Match orders and execute trades at all markets
+        let mut agents_mut = self.lifecycle.get_agents_mut();
+        let mut currency_lock = self.currency.write();
+        
+        for market in markets_lock.get_all_markets_mut() {
+            // Match buy and sell orders
+            let trades = market.match_orders();
+            
+            // Execute each trade
+            for trade in trades {
+                // Find buyer and seller
+                if let Some(buyer) = agents_mut.iter_mut().find(|a| a.id == trade.buyer_id) {
+                    let total_cost = trade.price_per_unit * trade.quantity as f64;
+                    
+                    // Check if buyer can still afford (might have spent money already this tick)
+                    if buyer.wallet >= total_cost {
+                        // Deduct money from buyer
+                        buyer.wallet -= total_cost;
+                        
+                        // Add resources to buyer inventory
+                        *buyer.inventory.entry(trade.resource).or_insert(0) += trade.quantity;
+                        
+                        // Now find seller and complete trade
+                        if let Some(seller) = agents_mut.iter_mut().find(|a| a.id == trade.seller_id) {
+                            // Add money to seller
+                            seller.wallet += total_cost;
+                            
+                            // Remove resources from seller inventory
+                            if let Some(seller_amount) = seller.inventory.get_mut(&trade.resource) {
+                                *seller_amount = seller_amount.saturating_sub(trade.quantity);
+                            }
+                            
+                            // Record transaction in currency system
+                            currency_lock.record_transaction(total_cost);
+                            
+                            info!("💰 Trade executed: {} {} for {:.2} ({:.2}/unit)", 
+                                  trade.quantity, format!("{:?}", trade.resource), total_cost, trade.price_per_unit);
+                        }
+                    }
+                }
+            }
+            
+            // Update market prices based on supply/demand
+            market.update_prices();
+        }
+        
+        drop(currency_lock);
+        drop(agents_mut); // CRITICAL: Drop write lock from trade execution
+        drop(markets_lock);
+        
+        // ECONOMIC SYSTEM: Wage system (pay workers every simulated hour)
+        let elapsed = self.wage_timer.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        
+        if elapsed >= 60 { // Pay wages every 60 seconds (1 simulated hour)
+            self.wage_timer.store(0, std::sync::atomic::Ordering::Relaxed);
+            
+            let mut agents_mut = self.lifecycle.get_agents_mut();
+            let mut currency_mut = self.currency.write();
+            
+            for agent in agents_mut.iter_mut() {
+                // Calculate wage based on job
+                let wage = match agent.job {
+                    Job::Farmer => 5.0,
+                    Job::Woodcutter => 6.0,
+                    Job::Miner => 7.0,
+                    Job::Builder => 8.0,
+                    Job::Unemployed => {
+                        // Social classes get stipends
+                        match agent.social_class {
+                            world_sim_agents::SocialClass::King => 50.0,
+                            world_sim_agents::SocialClass::Noble => 20.0,
+                            world_sim_agents::SocialClass::Knight => 15.0,
+                            world_sim_agents::SocialClass::Soldier => 10.0,
+                            world_sim_agents::SocialClass::Merchant => 12.0,
+                            world_sim_agents::SocialClass::Cleric => 8.0,
+                            _ => 0.0,
+                        }
+                    }
+                };
+                
+                if wage > 0.0 {
+                    agent.wallet += wage;
+                    currency_mut.mint_currency(wage); // Creates new money (inflation)
+                }
+            }
+            
+            info!("💵 Wages paid to {} workers", agents_mut.len());
+        }
         
         // Update building construction progress
         let agents = self.lifecycle.get_agents();
@@ -834,29 +1083,109 @@ impl Simulation {
                 .collect()
         }; // Drop read lock
         
-        // Now update each building
-        for (building_id, building_pos) in incomplete_buildings {
-            // Count how many builders are working on this building
-            let builders_present = agents.iter().filter(|a| {
-                matches!(a.state, AgentState::Building { .. }) 
-                    && a.position.distance_to(&building_pos) < 5.0
-            }).count();
+        // RESOURCE-BASED CONSTRUCTION: Builders deliver and consume resources
+        if !incomplete_buildings.is_empty() {
+            let mut agents_mut = self.lifecycle.get_agents_mut();
             
-            if builders_present > 0 {
-                // Progress increases faster with more builders
-                let progress_per_builder = 0.02; // 2% per builder per second
-                let total_progress = progress_per_builder * builders_present as f32;
+            for (building_id, building_pos) in incomplete_buildings {
+                let mut buildings_write = self.buildings.write();
                 
-                let mut buildings = self.buildings.write();
-                if let Some(b) = buildings.get_building_mut(building_id) {
-                    let was_incomplete = !b.is_complete();
-                    b.add_construction_progress(total_progress);
+                if let Some(building) = buildings_write.get_building_mut(building_id) {
+                    // Process builders at this building
+                    for agent in agents_mut.iter_mut() {
+                    if !matches!(agent.job, Job::Builder) {
+                        continue;
+                    }
                     
-                    if was_incomplete && b.is_complete() {
-                        info!("🏗️ Building completed: {}", b.name);
+                    let dist_to_building = agent.position.distance_to(&building_pos);
+                    
+                    // Builder resource delivery and construction logic
+                    if let Some(carrying) = &agent.carrying_resources {
+                        // Carrying resources - deliver them
+                        if carrying.target_building_id == building_id && dist_to_building < 5.0 {
+                            // Deliver resources to building
+                            if carrying.wood > 0 {
+                                building.add_resources(world_sim_core::ResourceType::Wood, carrying.wood);
+                            }
+                            if carrying.stone > 0 {
+                                building.add_resources(world_sim_core::ResourceType::Stone, carrying.stone);
+                            }
+                            if carrying.iron > 0 {
+                                building.add_resources(world_sim_core::ResourceType::Iron, carrying.iron);
+                            }
+                            
+                            info!("🚚 Builder delivered {} wood, {} stone, {} iron to {}", 
+                                  carrying.wood, carrying.stone, carrying.iron, building.name);
+                            
+                            agent.carrying_resources = None;
+                        }
+                    } else {
+                        // Not carrying - check if building needs resources
+                        let remaining = building.remaining_resources();
+                        
+                        if !remaining.is_empty() && dist_to_building < 50.0 {
+                            // Building needs resources - go get them from inventory or warehouse
+                            let mut resources_to_carry = world_sim_agents::BuildingResources {
+                                wood: 0,
+                                stone: 0,
+                                iron: 0,
+                                target_building_id: building_id,
+                            };
+                            
+                            // Take what we can from our inventory (max 20 per trip)
+                            if let Some(needed_wood) = remaining.get(&world_sim_core::ResourceType::Wood) {
+                                let take = (*needed_wood).min(20).min(*agent.inventory.get(&world_sim_core::ResourceType::Wood).unwrap_or(&0));
+                                if take > 0 {
+                                    resources_to_carry.wood = take;
+                                    *agent.inventory.entry(world_sim_core::ResourceType::Wood).or_insert(0) -= take;
+                                }
+                            }
+                            
+                            if let Some(needed_stone) = remaining.get(&world_sim_core::ResourceType::Stone) {
+                                let take = (*needed_stone).min(20).min(*agent.inventory.get(&world_sim_core::ResourceType::Stone).unwrap_or(&0));
+                                if take > 0 {
+                                    resources_to_carry.stone = take;
+                                    *agent.inventory.entry(world_sim_core::ResourceType::Stone).or_insert(0) -= take;
+                                }
+                            }
+                            
+                            if let Some(needed_iron) = remaining.get(&world_sim_core::ResourceType::Iron) {
+                                let take = (*needed_iron).min(10).min(*agent.inventory.get(&world_sim_core::ResourceType::Iron).unwrap_or(&0));
+                                if take > 0 {
+                                    resources_to_carry.iron = take;
+                                    *agent.inventory.entry(world_sim_core::ResourceType::Iron).or_insert(0) -= take;
+                                }
+                            }
+                            
+                            // If we picked up any resources, start carrying them
+                            if resources_to_carry.wood > 0 || resources_to_carry.stone > 0 || resources_to_carry.iron > 0 {
+                                agent.carrying_resources = Some(resources_to_carry);
+                            }
+                        }
+                    }
+                    
+                    // Work on construction if at site (with resource consumption)
+                    if dist_to_building < 5.0 && agent.carrying_resources.is_none() {
+                        let progress_per_builder = 0.02; // 2% per builder per second
+                        
+                        if building.construct_with_resources(progress_per_builder) {
+                            agent.state = AgentState::Building { 
+                                building_type: format!("{:?}", building.building_type)
+                            };
+                            
+                            if building.is_complete() {
+                                info!("🏗️ Building completed: {}", building.name);
+                            }
+                        } else {
+                            // Can't construct - need more resources
+                            agent.state = AgentState::Idle;
+                        }
+                    }
                     }
                 }
+                drop(buildings_write);
             }
+            drop(agents_mut); // Explicitly drop agents lock after all buildings processed
         }
         
         // CRITICAL: Update world state for visualizer EVERY SECOND (not every 60 seconds!)
@@ -877,6 +1206,15 @@ impl Simulation {
         
         // Check for resource scarcity and trigger wars organically
         self.check_resource_scarcity_and_trigger_wars().await;
+        
+        // HIERARCHICAL AI: King decision-making
+        self.process_king_decisions().await;
+        
+        // HIERARCHICAL AI: Noble order execution
+        self.process_noble_orders().await;
+        
+        // HIERARCHICAL AI: Peasant self-building
+        self.process_peasant_building().await;
         
         // Update metrics
         {
@@ -1105,6 +1443,283 @@ impl Simulation {
                     info!("  Materials per capita: {:.1}", materials_per_capita);
                 }
             }
+        }
+    }
+    
+    /// HIERARCHICAL AI: King decision-making (sets kingdom goals)
+    async fn process_king_decisions(&self) {
+        let agents = self.lifecycle.get_agents();
+        let resource_nodes = self.resources.get_nodes();
+        let agent_count = agents.len();
+        
+        // Calculate economic metrics for decision-making
+        let total_food: u32 = resource_nodes.iter()
+            .filter(|r| matches!(r.resource_type, ResourceNodeType::Farm))
+            .map(|r| r.quantity).sum();
+        
+        let total_materials: u32 = resource_nodes.iter()
+            .filter(|r| matches!(r.resource_type, ResourceNodeType::Tree | ResourceNodeType::Rock | ResourceNodeType::IronDeposit))
+            .map(|r| r.quantity).sum();
+        
+        let food_per_capita = if agent_count > 0 { total_food as f32 / agent_count as f32 } else { 100.0 };
+        let materials_per_capita = if agent_count > 0 { total_materials as f32 / agent_count as f32 } else { 100.0 };
+        
+        // Check for threats
+        let factions = self.politics.get_all_factions();
+        let at_war = agents.iter().any(|a| matches!(a.state, AgentState::Fighting { .. }));
+        let has_enemies = factions.len() >= 2;
+        
+        // Find all kings and make decisions
+        let mut kingdoms_lock = self.kingdoms.write();
+        
+        for agent in agents.iter() {
+            if matches!(agent.social_class, world_sim_agents::SocialClass::King) {
+                // Ensure king has a kingdom
+                if kingdoms_lock.get_kingdom_by_king(agent.id).is_none() {
+                    kingdoms_lock.create_kingdom(agent.id, agent.position);
+                    info!("👑 Kingdom established by {}", agent.name);
+                }
+                
+                if let Some(kingdom) = kingdoms_lock.get_kingdom_by_king_mut(agent.id) {
+                    // King AI: Analyze situation and set goal
+                    let new_goal = if at_war || has_enemies {
+                        use world_sim_societal::KingdomGoal;
+                        (KingdomGoal::DefendTerritory, 1.0)
+                    } else if food_per_capita < 15.0 {
+                        use world_sim_societal::KingdomGoal;
+                        (KingdomGoal::GrowPopulation, 0.9)
+                    } else if materials_per_capita < 25.0 {
+                        use world_sim_societal::KingdomGoal;
+                        (KingdomGoal::ExpandResources, 0.8)
+                    } else if agent_count > 50 {
+                        use world_sim_societal::KingdomGoal;
+                        (KingdomGoal::ImproveInfrastructure, 0.6)
+                    } else {
+                        use world_sim_societal::KingdomGoal;
+                        (KingdomGoal::Consolidate, 0.3)
+                    };
+                    
+                    if kingdom.current_goal != new_goal.0 {
+                        kingdom.set_goal(new_goal.0, new_goal.1, self.sim_time.seconds);
+                        info!("👑 King {} sets new goal: {:?} (priority: {:.1})", 
+                              agent.name, new_goal.0, new_goal.1);
+                    }
+                }
+            }
+        }
+    }
+    
+    /// HIERARCHICAL AI: Noble order execution (creates building orders)
+    async fn process_noble_orders(&self) {
+        let agents = self.lifecycle.get_agents();
+        let mut kingdoms_write = self.kingdoms.write();
+        
+        for agent in agents.iter() {
+            if matches!(agent.social_class, world_sim_agents::SocialClass::Noble) {
+                // Find king's kingdom to get current goal
+                let king_goal = agents.iter()
+                    .filter(|a| matches!(a.social_class, world_sim_agents::SocialClass::King))
+                    .filter_map(|king| kingdoms_write.get_kingdom_by_king(king.id))
+                    .next()
+                    .map(|k| k.current_goal);
+                
+                if let Some(goal) = king_goal {
+                    // Noble AI: Execute king's goal by creating building orders
+                    use world_sim_societal::{KingdomGoal, NobleOrder};
+                    use world_sim_world::BuildingType;
+                    use rand::Rng;
+                    let mut rng = rand::thread_rng();
+                    
+                    // Only create new orders occasionally (10% chance per minute)
+                    if rng.gen::<f32>() < 0.1 {
+                        let (building_type, priority) = match goal {
+                            KingdomGoal::DefendTerritory => {
+                                if rng.gen::<bool>() {
+                                    (BuildingType::Barracks, 0.9)
+                                } else {
+                                    (BuildingType::Walls, 1.0)
+                                }
+                            },
+                            KingdomGoal::ExpandResources => {
+                                if rng.gen::<bool>() {
+                                    (BuildingType::Farm, 0.8)
+                                } else {
+                                    (BuildingType::Mine, 0.9)
+                                }
+                            },
+                            KingdomGoal::PrepareForWar => {
+                                (BuildingType::Barracks, 1.0)
+                            },
+                            KingdomGoal::GrowPopulation => {
+                                (BuildingType::Farm, 0.9)
+                            },
+                            KingdomGoal::ImproveInfrastructure => {
+                                let choice = rng.gen_range(0..3);
+                                match choice {
+                                    0 => (BuildingType::Workshop, 0.7),
+                                    1 => (BuildingType::Tavern, 0.5),
+                                    _ => (BuildingType::Market, 0.8),
+                                }
+                            },
+                            KingdomGoal::Consolidate => {
+                                // No new orders during consolidation
+                                continue;
+                            }
+                        };
+                        
+                        // Choose location near noble's position
+                        let offset_x = rng.gen_range(-20.0..20.0);
+                        let offset_z = rng.gen_range(-20.0..20.0);
+                        let location = Position::new(
+                            agent.position.x + offset_x,
+                            1.0,
+                            agent.position.z + offset_z
+                        );
+                        
+                        let order = NobleOrder::new(agent.id, building_type, location, priority);
+                        kingdoms_write.add_noble_order(order.clone());
+                        
+                        info!("🏛️ Noble {} orders construction of {:?} at ({:.1}, {:.1})", 
+                              agent.name, building_type, location.x, location.z);
+                        
+                        // Create the actual building
+                        let mut buildings = self.buildings.write();
+                        let new_building = world_sim_world::Building::new(
+                            building_type,
+                            location,
+                            format!("{:?} (Noble Order)", building_type),
+                            world_sim_world::BuildingOwner::Public,
+                        );
+                        let building_id = new_building.id;
+                        buildings.add_building(new_building);
+                        
+                        // Update order with building ID
+                        if let Some(order_mut) = kingdoms_write.get_order_mut(order.id) {
+                            order_mut.building_id = Some(building_id);
+                            order_mut.status = world_sim_societal::OrderStatus::InProgress;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /// HIERARCHICAL AI: Peasant self-building (personal needs)
+    async fn process_peasant_building(&self) {
+        use rand::Rng;
+        let mut rng = rand::thread_rng();
+        
+        let agents = self.lifecycle.get_agents();
+        
+        for agent in agents.iter() {
+            if matches!(agent.social_class, world_sim_agents::SocialClass::Peasant) {
+                // Peasants occasionally decide to build for themselves (5% chance per minute)
+                if rng.gen::<f32>() < 0.05 {
+                    // Check if they have a home nearby
+                    let buildings = self.buildings.read();
+                    let has_nearby_house = buildings.get_all_buildings().iter()
+                        .any(|b| matches!(b.building_type, world_sim_world::BuildingType::PeasantHouse)
+                            && b.position.distance_to(&agent.position) < 30.0);
+                    
+                    drop(buildings);
+                    
+                    if !has_nearby_house {
+                        // Build a house for themselves
+                        use world_sim_world::BuildingType;
+                        
+                        let offset_x = rng.gen_range(-10.0..10.0);
+                        let offset_z = rng.gen_range(-10.0..10.0);
+                        let location = Position::new(
+                            agent.position.x + offset_x,
+                            1.0,
+                            agent.position.z + offset_z
+                        );
+                        
+                        let mut buildings = self.buildings.write();
+                        let house = world_sim_world::Building::new(
+                            BuildingType::PeasantHouse,
+                            location,
+                            format!("{}'s House", agent.name),
+                            world_sim_world::BuildingOwner::Agent(agent.id),
+                        );
+                        buildings.add_building(house);
+                        
+                        info!("🏠 Peasant {} decides to build a house at ({:.1}, {:.1})", 
+                              agent.name, location.x, location.z);
+                    } else if agent.job == Job::Farmer {
+                        // Farmers build sheds
+                        let has_nearby_shed = {
+                            let buildings = self.buildings.read();
+                            buildings.get_all_buildings().iter()
+                                .any(|b| matches!(b.building_type, world_sim_world::BuildingType::FarmingShed)
+                                    && b.position.distance_to(&agent.position) < 20.0)
+                        };
+                        
+                        if !has_nearby_shed {
+                            use world_sim_world::BuildingType;
+                            
+                            let offset_x = rng.gen_range(-8.0..8.0);
+                            let offset_z = rng.gen_range(-8.0..8.0);
+                            let location = Position::new(
+                                agent.position.x + offset_x,
+                                1.0,
+                                agent.position.z + offset_z
+                            );
+                            
+                            let mut buildings = self.buildings.write();
+                            let shed = world_sim_world::Building::new(
+                                BuildingType::FarmingShed,
+                                location,
+                                format!("{}'s Shed", agent.name),
+                                world_sim_world::BuildingOwner::Agent(agent.id),
+                            );
+                            buildings.add_building(shed);
+                            
+                            info!("🌾 Farmer {} builds a farming shed at ({:.1}, {:.1})", 
+                                  agent.name, location.x, location.z);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /// Check if an agent can order construction of a building type (building permissions)
+    fn can_order_building(social_class: world_sim_agents::SocialClass, building_type: world_sim_world::BuildingType) -> bool {
+        use world_sim_agents::SocialClass;
+        use world_sim_world::BuildingType;
+        
+        match (social_class, building_type) {
+            // Kings can build anything
+            (SocialClass::King, _) => true,
+            
+            // Nobles can build military and infrastructure
+            (SocialClass::Noble, BuildingType::Barracks) => true,
+            (SocialClass::Noble, BuildingType::Walls) => true,
+            (SocialClass::Noble, BuildingType::Market) => true,
+            (SocialClass::Noble, BuildingType::Workshop) => true,
+            (SocialClass::Noble, BuildingType::NobleEstate) => true, // For themselves
+            (SocialClass::Noble, BuildingType::Farm) => true,
+            (SocialClass::Noble, BuildingType::Mine) => true,
+            
+            // Merchants can build commercial buildings
+            (SocialClass::Merchant, BuildingType::Workshop) => true,
+            (SocialClass::Merchant, BuildingType::Market) => true,
+            (SocialClass::Merchant, BuildingType::Tavern) => true,
+            
+            // Burghers (craftsmen) can build workshops
+            (SocialClass::Burgher, BuildingType::Workshop) => true,
+            (SocialClass::Burgher, BuildingType::Tavern) => true,
+            
+            // Clerics can build churches
+            (SocialClass::Cleric, BuildingType::Church) => true,
+            
+            // Peasants can only build basic personal structures
+            (SocialClass::Peasant, BuildingType::PeasantHouse) => true,
+            (SocialClass::Peasant, BuildingType::FarmingShed) => true,
+            
+            // Everything else is not permitted
+            _ => false,
         }
     }
     

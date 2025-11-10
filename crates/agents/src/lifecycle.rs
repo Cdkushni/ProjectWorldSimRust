@@ -116,6 +116,11 @@ impl LifecycleLayer {
     pub fn get_agents(&self) -> Vec<SimAgent> {
         self.agents.read().clone()
     }
+    
+    /// Get mutable reference to all agents (returns a write guard)
+    pub fn get_agents_mut(&self) -> parking_lot::RwLockWriteGuard<Vec<SimAgent>> {
+        self.agents.write()
+    }
 
     /// Get agent by ID
     pub fn get_agent(&self, id: AgentId) -> Option<SimAgent> {

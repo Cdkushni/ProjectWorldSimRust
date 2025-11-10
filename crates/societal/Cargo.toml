@@ -7,6 +7,7 @@ edition.workspace = true
 world_sim_core = { path = "../core" }
 world_sim_event_bus = { path = "../event_bus" }
 world_sim_agents = { path = "../agents" }
+world_sim_world = { path = "../world" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 uuid = { workspace = true }

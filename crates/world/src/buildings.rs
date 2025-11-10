@@ -15,6 +15,10 @@ pub struct Building {
     pub construction_progress: f32, // 0.0 to 1.0
     pub health: f32,
     pub storage: ResourceStorage,
+    
+    // Resource-based construction
+    pub required_resources: HashMap<ResourceType, u32>, // Total resources needed
+    pub current_resources: HashMap<ResourceType, u32>,  // Resources delivered so far
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -29,6 +33,78 @@ pub enum BuildingType {
     Church,         // Cleric activities
     Tavern,         // Social gathering
     Walls,          // Defensive structures
+    PeasantHouse,   // Small dwelling for peasants
+    FarmingShed,    // Storage for farm equipment
+}
+
+impl BuildingType {
+    /// Get the resource requirements for constructing this building type
+    pub fn required_resources(&self) -> HashMap<ResourceType, u32> {
+        let mut requirements = HashMap::new();
+        
+        match self {
+            BuildingType::Warehouse => {
+                requirements.insert(ResourceType::Wood, 100);
+                requirements.insert(ResourceType::Stone, 50);
+                requirements.insert(ResourceType::Iron, 20);
+            },
+            BuildingType::Barracks => {
+                requirements.insert(ResourceType::Wood, 80);
+                requirements.insert(ResourceType::Stone, 60);
+                requirements.insert(ResourceType::Iron, 30);
+            },
+            BuildingType::Workshop => {
+                requirements.insert(ResourceType::Wood, 60);
+                requirements.insert(ResourceType::Stone, 40);
+                requirements.insert(ResourceType::Iron, 15);
+            },
+            BuildingType::Farm => {
+                requirements.insert(ResourceType::Wood, 40);
+                requirements.insert(ResourceType::Stone, 20);
+                requirements.insert(ResourceType::Iron, 5);
+            },
+            BuildingType::Mine => {
+                requirements.insert(ResourceType::Wood, 30);
+                requirements.insert(ResourceType::Stone, 50);
+                requirements.insert(ResourceType::Iron, 25);
+            },
+            BuildingType::NobleEstate => {
+                requirements.insert(ResourceType::Wood, 150);
+                requirements.insert(ResourceType::Stone, 100);
+                requirements.insert(ResourceType::Iron, 40);
+            },
+            BuildingType::Church => {
+                requirements.insert(ResourceType::Wood, 70);
+                requirements.insert(ResourceType::Stone, 80);
+                requirements.insert(ResourceType::Iron, 10);
+            },
+            BuildingType::Tavern => {
+                requirements.insert(ResourceType::Wood, 50);
+                requirements.insert(ResourceType::Stone, 30);
+                requirements.insert(ResourceType::Iron, 5);
+            },
+            BuildingType::Walls => {
+                requirements.insert(ResourceType::Wood, 20);
+                requirements.insert(ResourceType::Stone, 200);
+                requirements.insert(ResourceType::Iron, 50);
+            },
+            BuildingType::PeasantHouse => {
+                requirements.insert(ResourceType::Wood, 30);
+                requirements.insert(ResourceType::Stone, 10);
+            },
+            BuildingType::FarmingShed => {
+                requirements.insert(ResourceType::Wood, 20);
+                requirements.insert(ResourceType::Stone, 5);
+            },
+            BuildingType::Market => {
+                requirements.insert(ResourceType::Wood, 90);
+                requirements.insert(ResourceType::Stone, 70);
+                requirements.insert(ResourceType::Iron, 15);
+            },
+        }
+        
+        requirements
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -109,6 +185,8 @@ impl Building {
             _ => 0,
         };
         
+        let required_resources = building_type.required_resources();
+        
         Self {
             id: Uuid::new_v4(),
             building_type,
@@ -118,7 +196,60 @@ impl Building {
             construction_progress: 0.0,
             health: 100.0,
             storage: ResourceStorage::new(capacity),
+            required_resources: required_resources.clone(),
+            current_resources: HashMap::new(), // Start empty
         }
+    }
+    
+    /// Check if building has enough resources for construction
+    pub fn has_sufficient_resources(&self) -> bool {
+        for (resource_type, required) in &self.required_resources {
+            let current = self.current_resources.get(resource_type).copied().unwrap_or(0);
+            if current < *required {
+                return false;
+            }
+        }
+        true
+    }
+    
+    /// Get percentage of resources delivered
+    pub fn resource_completion_percent(&self) -> f32 {
+        if self.required_resources.is_empty() {
+            return 1.0;
+        }
+        
+        let mut total_required = 0;
+        let mut total_delivered = 0;
+        
+        for (resource_type, required) in &self.required_resources {
+            total_required += required;
+            total_delivered += self.current_resources.get(resource_type).copied().unwrap_or(0);
+        }
+        
+        if total_required == 0 {
+            1.0
+        } else {
+            total_delivered as f32 / total_required as f32
+        }
+    }
+    
+    /// Add resources to the building (from builder delivery)
+    pub fn add_resources(&mut self, resource_type: ResourceType, quantity: u32) {
+        *self.current_resources.entry(resource_type).or_insert(0) += quantity;
+    }
+    
+    /// Get remaining resources needed
+    pub fn remaining_resources(&self) -> HashMap<ResourceType, u32> {
+        let mut remaining = HashMap::new();
+        
+        for (resource_type, required) in &self.required_resources {
+            let current = self.current_resources.get(resource_type).copied().unwrap_or(0);
+            if current < *required {
+                remaining.insert(*resource_type, required - current);
+            }
+        }
+        
+        remaining
     }
     
     pub fn is_complete(&self) -> bool {
@@ -127,6 +258,38 @@ impl Building {
     
     pub fn add_construction_progress(&mut self, amount: f32) {
         self.construction_progress = (self.construction_progress + amount).min(1.0);
+    }
+    
+    /// Construct with resource consumption (returns true if construction occurred)
+    pub fn construct_with_resources(&mut self, progress_amount: f32) -> bool {
+        // Check if we have enough resources for this tick
+        let mut can_construct = true;
+        
+        for (resource_type, required) in &self.required_resources {
+            let current = self.current_resources.get(resource_type).copied().unwrap_or(0);
+            let needed_for_tick = (*required as f32 * progress_amount).ceil() as u32;
+            
+            if current < needed_for_tick {
+                can_construct = false;
+                break;
+            }
+        }
+        
+        if can_construct {
+            // Consume resources proportional to progress
+            for (resource_type, required) in &self.required_resources {
+                let consumption = (*required as f32 * progress_amount).ceil() as u32;
+                if let Some(current) = self.current_resources.get_mut(resource_type) {
+                    *current = current.saturating_sub(consumption);
+                }
+            }
+            
+            // Increase construction progress
+            self.construction_progress = (self.construction_progress + progress_amount).min(1.0);
+            true
+        } else {
+            false
+        }
     }
     
     pub fn damage(&mut self, amount: f32) {

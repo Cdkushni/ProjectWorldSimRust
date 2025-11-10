@@ -153,6 +153,34 @@ impl SimAgent {
     pub fn is_alive(&self) -> bool {
         !matches!(self.state, AgentState::Dead)
     }
+    
+    /// Get maximum carrying capacity based on social class
+    pub fn max_carrying_capacity(&self) -> u32 {
+        match self.social_class {
+            SocialClass::King | SocialClass::Noble => 200,  // Higher status, more resources
+            SocialClass::Merchant | SocialClass::Burgher => 100, // Traders carry more
+            SocialClass::Knight | SocialClass::Soldier => 80,    // Military, moderate
+            SocialClass::Cleric => 50,                           // Non-physical work
+            SocialClass::Peasant => 60,                          // Working class
+        }
+    }
+    
+    /// Get current total inventory weight
+    pub fn current_inventory_weight(&self) -> u32 {
+        let mut total = self.inventory.values().sum::<u32>();
+        
+        // Add carrying resources if any
+        if let Some(carrying) = &self.carrying_resources {
+            total += carrying.wood + carrying.stone + carrying.iron;
+        }
+        
+        total
+    }
+    
+    /// Check if agent can carry more resources
+    pub fn can_carry_more(&self, additional: u32) -> bool {
+        self.current_inventory_weight() + additional <= self.max_carrying_capacity()
+    }
 
     /// Get skill level
     pub fn get_skill(&self, skill: Skill) -> f32 {
