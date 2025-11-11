@@ -146,6 +146,9 @@ pub async fn get_world_state(
     Json(serde_json::json!({
         "agents": world_state.agents,
         "resources": world_state.resources,
+        "markets": world_state.markets,
+        "buildings": world_state.buildings,
+        "currency_info": world_state.currency_info,
         "terrain_size": world_state.terrain_size
     }))
 }

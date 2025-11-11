@@ -1344,7 +1344,9 @@ impl Simulation {
         
         // Update buildings
         let buildings = self.buildings.read();
-        world_state.buildings = buildings.get_all_buildings()
+        let all_buildings = buildings.get_all_buildings();
+        info!("📊 Syncing {} buildings to API", all_buildings.len());
+        world_state.buildings = all_buildings
             .iter()
             .map(|b| {
                 let building_type_str = format!("{:?}", b.building_type);
@@ -1507,6 +1509,7 @@ impl Simulation {
                 }
             }
         }
+        drop(kingdoms_lock); // Explicitly drop kingdoms write lock
     }
     
     /// HIERARCHICAL AI: Noble order execution (creates building orders)
@@ -1598,10 +1601,13 @@ impl Simulation {
                             order_mut.building_id = Some(building_id);
                             order_mut.status = world_sim_societal::OrderStatus::InProgress;
                         }
+                        
+                        drop(buildings); // CRITICAL: Drop buildings write lock immediately
                     }
                 }
             }
         }
+        drop(kingdoms_write); // Explicitly drop kingdoms write lock
     }
     
     /// HIERARCHICAL AI: Peasant self-building (personal needs)
@@ -1643,6 +1649,7 @@ impl Simulation {
                             world_sim_world::BuildingOwner::Agent(agent.id),
                         );
                         buildings.add_building(house);
+                        drop(buildings); // CRITICAL: Drop buildings write lock immediately
                         
                         info!("🏠 Peasant {} decides to build a house at ({:.1}, {:.1})", 
                               agent.name, location.x, location.z);
@@ -1674,6 +1681,7 @@ impl Simulation {
                                 world_sim_world::BuildingOwner::Agent(agent.id),
                             );
                             buildings.add_building(shed);
+                            drop(buildings); // CRITICAL: Drop buildings write lock immediately
                             
                             info!("🌾 Farmer {} builds a farming shed at ({:.1}, {:.1})", 
                                   agent.name, location.x, location.z);

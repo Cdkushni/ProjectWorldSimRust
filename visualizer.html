@@ -1850,16 +1850,23 @@
         
         // Update buildings in the scene
         function updateBuildings(buildingData) {
-            const currentBuildingIds = new Set();
+            console.log('🏗️ updateBuildings called with', buildingData.length, 'buildings');
+            if (buildingData.length > 0) {
+                console.log('First building:', buildingData[0]);
+            }
             
-            buildingData.forEach(buildingInfo => {
-                currentBuildingIds.add(buildingInfo.id);
+            try {
+                const currentBuildingIds = new Set();
                 
-                const existing = buildings.get(buildingInfo.id);
-                
-                if (!existing) {
-                    // Create new building
-                    const buildingGroup = new THREE.Group();
+                buildingData.forEach(buildingInfo => {
+                    currentBuildingIds.add(buildingInfo.id);
+                    
+                    const existing = buildings.get(buildingInfo.id);
+                    
+                    if (!existing) {
+                        // Create new building
+                        console.log('Creating new building:', buildingInfo.name, 'at', buildingInfo.x, buildingInfo.z);
+                        const buildingGroup = new THREE.Group();
                     
                     // Building base/foundation
                     const baseGeometry = new THREE.BoxGeometry(10, 0.3, 10);
@@ -1874,7 +1881,7 @@
                     const wallMaterial = new THREE.MeshStandardMaterial({ 
                         color: buildingInfo.construction_progress < 1.0 ? 0x8a7a6a : 0x6a5a4a,
                         roughness: 0.8,
-                        opacity: Math.max(0.3, buildingInfo.construction_progress),
+                        opacity: Math.max(0.7, buildingInfo.construction_progress), // Increased from 0.3 to 0.7 for visibility
                         transparent: buildingInfo.construction_progress < 1.0
                     });
                     const walls = new THREE.Mesh(wallGeometry, wallMaterial);
@@ -1973,7 +1980,7 @@
                         data: buildingInfo
                     });
                     
-                    console.log(`🏗️ Building created: ${buildingInfo.name} (${Math.floor(buildingInfo.construction_progress * 100)}% complete)`);
+                    console.log(`🏗️ Building created: ${buildingInfo.name} (${Math.floor(buildingInfo.construction_progress * 100)}% complete) at (${buildingInfo.x.toFixed(1)}, ${buildingInfo.z.toFixed(1)})`);
                 } else {
                     // Update existing building (mainly for construction progress)
                     if (buildingInfo.construction_progress !== existing.data.construction_progress) {
@@ -1998,6 +2005,13 @@
                     buildings.delete(id);
                 }
             });
+            
+                // Debug: Log building count
+                console.log(`📊 Buildings in scene: ${buildings.size} (received ${buildingData.length} from API)`);
+            } catch (error) {
+                console.error('❌ Error in updateBuildings:', error);
+                console.error('Stack:', error.stack);
+            }
         }
         
         // Update currency information display
