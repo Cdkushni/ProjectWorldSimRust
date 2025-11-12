@@ -33,6 +33,30 @@ pub struct SimAgent {
     pub inventory: HashMap<ResourceType, u32>,        // Resources carried/owned
     pub needs: HashMap<ResourceType, u32>,            // What they want to buy
     pub carrying_resources: Option<BuildingResources>, // Resources being carried to build site
+    pub just_harvested: Option<(ResourceType, u32, f64)>, // (resource_type, amount, timestamp) for visualization
+    pub just_transacted: Option<(TransactionType, f64, f64)>, // (type, gold_amount, timestamp) for visualization
+    
+    // Loan system (for Burghers/Merchants)
+    pub loans_given: Vec<Loan>,  // Loans this agent has given out
+    pub loans_owed: Vec<Loan>,   // Loans this agent owes
+}
+
+/// Loan structure for Burgher banking system
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Loan {
+    pub lender_id: AgentId,
+    pub borrower_id: AgentId,
+    pub principal: f64,      // Original loan amount
+    pub remaining: f64,      // Amount still owed
+    pub interest_rate: f64,  // 0.05 = 5% interest
+    pub issued_time: f64,    // Simulation time when issued
+}
+
+/// Transaction type for visualization
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+pub enum TransactionType {
+    Sold,   // Earned gold by selling resources
+    Bought, // Spent gold by buying resources
 }
 
 /// Current behavioral state
@@ -85,26 +109,36 @@ impl SimAgent {
         let job = match social_class {
             SocialClass::King | SocialClass::Noble | SocialClass::Knight => Job::Unemployed,
             SocialClass::Soldier => Job::Unemployed, // Full-time military
-            SocialClass::Merchant | SocialClass::Burgher => Job::Builder, // Craftsmen
+            SocialClass::Merchant => Job::Unemployed, // Focus on trading
+            SocialClass::Burgher => {
+                // Burghers: NEVER harvest! They are market facilitators
+                // They handle: loans, inter-market trade, market balancing
+                Job::Unemployed // Special role handled separately
+            },
             SocialClass::Cleric => Job::Unemployed, // Religious duties
             SocialClass::Peasant => {
-                match rand::random::<u32>() % 3 {
-                    0 => Job::Woodcutter,
-                    1 => Job::Miner,
-                    _ => Job::Farmer,
+                // Peasants: 80% harvesting, 20% building
+                if rand::random::<u32>() % 5 == 0 {
+                    Job::Builder
+                } else {
+                    match rand::random::<u32>() % 3 {
+                        0 => Job::Woodcutter,
+                        1 => Job::Miner,
+                        _ => Job::Farmer,
+                    }
                 }
             }
         };
         
-        // Initial wallet based on social class
+        // Initial wallet based on social class (INCREASED for economic stability)
         let wallet = match social_class {
-            SocialClass::King => 1000.0,
-            SocialClass::Noble => 500.0,
-            SocialClass::Knight => 200.0,
-            SocialClass::Merchant | SocialClass::Burgher => 150.0,
-            SocialClass::Soldier => 100.0,
-            SocialClass::Cleric => 80.0,
-            SocialClass::Peasant => 50.0,
+            SocialClass::King => 5000.0,      // Can fund major projects
+            SocialClass::Noble => 2000.0,     // Can commission buildings
+            SocialClass::Knight => 500.0,     
+            SocialClass::Merchant | SocialClass::Burgher => 400.0, // Working capital
+            SocialClass::Soldier => 300.0,    
+            SocialClass::Cleric => 200.0,     
+            SocialClass::Peasant => 300.0,    // Enough to save for a house after some work
         };
         
         // Basic needs for all agents
@@ -146,6 +180,10 @@ impl SimAgent {
             inventory: HashMap::new(),
             needs,
             carrying_resources: None,
+            just_harvested: None,
+            just_transacted: None,
+            loans_given: Vec::new(),
+            loans_owed: Vec::new(),
         }
     }
 

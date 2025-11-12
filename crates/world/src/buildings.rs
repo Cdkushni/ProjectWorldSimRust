@@ -19,6 +19,7 @@ pub struct Building {
     // Resource-based construction
     pub required_resources: HashMap<ResourceType, u32>, // Total resources needed
     pub current_resources: HashMap<ResourceType, u32>,  // Resources delivered so far
+    pub construction_fund: f64,  // Gold allocated by planner to buy materials
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -198,6 +199,7 @@ impl Building {
             storage: ResourceStorage::new(capacity),
             required_resources: required_resources.clone(),
             current_resources: HashMap::new(), // Start empty
+            construction_fund: 0.0, // Will be set by planner
         }
     }
     

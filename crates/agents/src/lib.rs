@@ -5,7 +5,7 @@ pub mod skills;
 pub mod personality;
 pub mod ownership;
 
-pub use agent::{SimAgent, AgentState, Job, SocialClass, BuildingResources};
+pub use agent::{SimAgent, AgentState, Job, SocialClass, BuildingResources, TransactionType, Loan};
 pub use lifecycle::*;
 pub use skills::*;
 pub use personality::*;

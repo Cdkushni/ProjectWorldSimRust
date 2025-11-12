@@ -621,10 +621,291 @@
             width: 100%;
             height: 100%;
         }
+        
+        /* COLLAPSIBLE SIDEBAR - NEW DESIGN */
+        #sidebar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 340px;
+            max-height: calc(100vh - 40px);
+            background: linear-gradient(135deg, rgba(10, 10, 26, 0.98), rgba(20, 20, 40, 0.98));
+            border-radius: 16px;
+            border: 2px solid rgba(78, 205, 196, 0.5);
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.8);
+            overflow-y: auto;
+            backdrop-filter: blur(20px);
+            z-index: 100;
+        }
+        
+        #sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #sidebar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+        
+        #sidebar::-webkit-scrollbar-thumb {
+            background: rgba(78, 205, 196, 0.4);
+            border-radius: 4px;
+        }
+        
+        #sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(78, 205, 196, 0.6);
+        }
+        
+        .sidebar-section {
+            border-bottom: 1px solid rgba(78, 205, 196, 0.15);
+        }
+        
+        .sidebar-section:last-child {
+            border-bottom: none;
+        }
+        
+        .sidebar-header {
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(78, 205, 196, 0.08);
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .sidebar-header:hover {
+            background: rgba(78, 205, 196, 0.18);
+        }
+        
+        .sidebar-header:active {
+            background: rgba(78, 205, 196, 0.25);
+        }
+        
+        .sidebar-title {
+            color: #4ecdc4;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-toggle {
+            color: #4ecdc4;
+            font-size: 14px;
+            transition: transform 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .sidebar-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .sidebar-content {
+            padding: 16px 20px;
+            max-height: 500px;
+            overflow: hidden;
+            transition: all 0.3s ease-out;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-content.collapsed {
+            max-height: 0;
+            padding: 0 20px;
+        }
+        
+        .stat-item, .legend-item, .resource-row {
+            margin: 10px 0;
+            font-size: 13px;
+        }
+        
+        /* Hide old panels */
+        #stats, #legend, #faction-stats, #resource-stats, #currency-stats, #inventory-stats {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
     <div id="container"></div>
+    
+    <!-- NEW COLLAPSIBLE SIDEBAR -->
+    <div id="sidebar">
+        <!-- Simulation Stats -->
+        <div class="sidebar-section">
+            <div class="sidebar-header" onclick="toggleSection('stats-content')">
+                <div class="sidebar-title">📊 Simulation Stats</div>
+                <div class="sidebar-toggle" id="stats-content-toggle">▼</div>
+            </div>
+            <div class="sidebar-content" id="stats-content">
+                <div class="stat-item">
+                    <span class="stat-label">🧑 Agents:</span>
+                    <span class="stat-value" id="agent-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">⏱️ Uptime:</span>
+                    <span class="stat-value" id="uptime">0s</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">⚡ Events:</span>
+                    <span class="stat-value" id="event-count">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Agent States Legend -->
+        <div class="sidebar-section">
+            <div class="sidebar-header" onclick="toggleSection('legend-content')">
+                <div class="sidebar-title">🎨 Agent States</div>
+                <div class="sidebar-toggle" id="legend-content-toggle">▼</div>
+            </div>
+            <div class="sidebar-content" id="legend-content">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4ecdc4; width: 15px; height: 15px; display: inline-block; margin-right: 8px; border-radius: 3px;"></div>
+                    <span class="legend-label">Idle</span>
+                    <span class="legend-count" id="count-idle">0</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3498db; width: 15px; height: 15px; display: inline-block; margin-right: 8px; border-radius: 3px;"></div>
+                    <span class="legend-label">Moving</span>
+                    <span class="legend-count" id="count-moving">0</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f39c12; width: 15px; height: 15px; display: inline-block; margin-right: 8px; border-radius: 3px;"></div>
+                    <span class="legend-label">Working</span>
+                    <span class="legend-count" id="count-working">0</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e74c3c; width: 15px; height: 15px; display: inline-block; margin-right: 8px; border-radius: 3px;"></div>
+                    <span class="legend-label">Fighting</span>
+                    <span class="legend-count" id="count-fighting">0</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9b59b6; width: 15px; height: 15px; display: inline-block; margin-right: 8px; border-radius: 3px;"></div>
+                    <span class="legend-label">Sleeping</span>
+                    <span class="legend-count" id="count-sleeping">0</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2ecc71; width: 15px; height: 15px; display: inline-block; margin-right: 8px; border-radius: 3px;"></div>
+                    <span class="legend-label">Eating</span>
+                    <span class="legend-count" id="count-eating">0</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #95a5a6; width: 15px; height: 15px; display: inline-block; margin-right: 8px; border-radius: 3px;"></div>
+                    <span class="legend-label">Dead</span>
+                    <span class="legend-count" id="count-dead">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Political Status -->
+        <div class="sidebar-section">
+            <div class="sidebar-header" onclick="toggleSection('politics-content')">
+                <div class="sidebar-title">⚔️ Political Status</div>
+                <div class="sidebar-toggle" id="politics-content-toggle">▼</div>
+            </div>
+            <div class="sidebar-content" id="politics-content">
+                <div class="faction-item">
+                    <div class="faction-name" style="color: #4ecdc4;">🏛️ Unified Society</div>
+                    <div class="faction-count" id="unified-count">100 agents</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resource Nodes -->
+        <div class="sidebar-section">
+            <div class="sidebar-header" onclick="toggleSection('resources-content')">
+                <div class="sidebar-title">🏭 Resource Nodes</div>
+                <div class="sidebar-toggle" id="resources-content-toggle">▼</div>
+            </div>
+            <div class="sidebar-content collapsed" id="resources-content">
+                <div class="resource-row">
+                    <span><span class="resource-icon">🌲</span>Trees:</span>
+                    <span id="resource-tree" style="color: #4ecdc4; font-weight: bold;">0</span>
+                </div>
+                <div class="resource-row">
+                    <span><span class="resource-icon">🪨</span>Rocks:</span>
+                    <span id="resource-rock" style="color: #4ecdc4; font-weight: bold;">0</span>
+                </div>
+                <div class="resource-row">
+                    <span><span class="resource-icon">🌾</span>Farms:</span>
+                    <span id="resource-farm" style="color: #4ecdc4; font-weight: bold;">0</span>
+                </div>
+                <div class="resource-row">
+                    <span><span class="resource-icon">⚙️</span>Iron:</span>
+                    <span id="resource-iron" style="color: #4ecdc4; font-weight: bold;">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Economy -->
+        <div class="sidebar-section">
+            <div class="sidebar-header" onclick="toggleSection('economy-content')">
+                <div class="sidebar-title">💰 Economy</div>
+                <div class="sidebar-toggle" id="economy-content-toggle">▼</div>
+            </div>
+            <div class="sidebar-content collapsed" id="economy-content">
+                <div class="resource-row">
+                    <span>Money Supply:</span>
+                    <span id="currency-supply" style="color: #f1c40f; font-weight: bold;">0</span>
+                </div>
+                <div class="resource-row">
+                    <span>Inflation Rate:</span>
+                    <span id="currency-inflation" style="color: #e74c3c; font-weight: bold;">0%</span>
+                </div>
+                <div class="resource-row">
+                    <span>Purchasing Power:</span>
+                    <span id="currency-power" style="color: #2ecc71; font-weight: bold;">100%</span>
+                </div>
+                <div class="resource-row">
+                    <span>💸 Transactions:</span>
+                    <span id="currency-transactions" style="color: #4ecdc4; font-weight: bold;">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Total Resources (Inventory) -->
+        <div class="sidebar-section">
+            <div class="sidebar-header" onclick="toggleSection('inventory-content')">
+                <div class="sidebar-title">📦 Total Resources</div>
+                <div class="sidebar-toggle" id="inventory-content-toggle">▼</div>
+            </div>
+            <div class="sidebar-content collapsed" id="inventory-content">
+                <div style="font-size: 11px; color: #888; margin-bottom: 10px;">Sum of all agent + building + market inventories</div>
+                <div class="resource-row">
+                    <span><span class="resource-icon">🌲</span>Wood:</span>
+                    <span id="total-wood" style="color: #8b4513; font-weight: bold;">0</span>
+                </div>
+                <div class="resource-row">
+                    <span><span class="resource-icon">🪨</span>Stone:</span>
+                    <span id="total-stone" style="color: #a0a0a0; font-weight: bold;">0</span>
+                </div>
+                <div class="resource-row">
+                    <span><span class="resource-icon">🌾</span>Food:</span>
+                    <span id="total-food" style="color: #f1c40f; font-weight: bold;">0</span>
+                </div>
+                <div class="resource-row">
+                    <span><span class="resource-icon">⚙️</span>Iron:</span>
+                    <span id="total-iron" style="color: #7f8c8d; font-weight: bold;">0</span>
+                </div>
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #444;">
+                    <div class="resource-row">
+                        <span style="font-size: 11px;">In Agent Inventories:</span>
+                        <span id="agent-inventory-total" style="color: #4ecdc4; font-weight: bold; font-size: 11px;">0</span>
+                    </div>
+                    <div class="resource-row">
+                        <span style="font-size: 11px;">In Buildings:</span>
+                        <span id="building-inventory-total" style="color: #e67e22; font-weight: bold; font-size: 11px;">0</span>
+                    </div>
+                    <div class="resource-row">
+                        <span style="font-size: 11px;">In Markets:</span>
+                        <span id="market-inventory-total" style="color: #9b59b6; font-weight: bold; font-size: 11px;">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div id="stats">
         <h2>📊 Simulation Stats</h2>
@@ -768,6 +1049,42 @@
         <div class="resource-row">
             <span>💸 Transactions:</span>
             <span id="currency-transactions" style="color: #4ecdc4; font-weight: bold;">0</span>
+        </div>
+    </div>
+    
+    <!-- Resource Inventory Panel -->
+    <div id="inventory-stats" style="position: absolute; top: 920px; left: 20px; background: rgba(0, 0, 0, 0.85); padding: 20px; border-radius: 12px; min-width: 280px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);">
+        <h3>📦 Total Resources</h3>
+        <div style="font-size: 10px; color: #888; margin-bottom: 10px;">Sum of all agent + building + market inventories</div>
+        <div class="resource-row">
+            <span><span class="resource-icon">🌲</span>Wood:</span>
+            <span id="total-wood" style="color: #8b4513; font-weight: bold;">0</span>
+        </div>
+        <div class="resource-row">
+            <span><span class="resource-icon">🪨</span>Stone:</span>
+            <span id="total-stone" style="color: #a0a0a0; font-weight: bold;">0</span>
+        </div>
+        <div class="resource-row">
+            <span><span class="resource-icon">🌾</span>Food:</span>
+            <span id="total-food" style="color: #f1c40f; font-weight: bold;">0</span>
+        </div>
+        <div class="resource-row">
+            <span><span class="resource-icon">⚙️</span>Iron:</span>
+            <span id="total-iron" style="color: #7f8c8d; font-weight: bold;">0</span>
+        </div>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #444;">
+            <div class="resource-row">
+                <span style="font-size: 11px;">In Agent Inventories:</span>
+                <span id="agent-inventory-total" style="color: #4ecdc4; font-weight: bold; font-size: 11px;">0</span>
+            </div>
+            <div class="resource-row">
+                <span style="font-size: 11px;">In Buildings:</span>
+                <span id="building-inventory-total" style="color: #e67e22; font-weight: bold; font-size: 11px;">0</span>
+            </div>
+            <div class="resource-row">
+                <span style="font-size: 11px;">In Markets:</span>
+                <span id="market-inventory-total" style="color: #9b59b6; font-weight: bold; font-size: 11px;">0</span>
+            </div>
         </div>
     </div>
     
@@ -1014,6 +1331,20 @@
         let isPaused = false;
         let terrainMesh;
         let lastEventCount = 0;
+        
+        // Collapsible sidebar toggle function
+        window.toggleSection = function(sectionId) {
+            const content = document.getElementById(sectionId);
+            const toggle = document.getElementById(sectionId + '-toggle');
+            
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                toggle.classList.remove('collapsed');
+            } else {
+                content.classList.add('collapsed');
+                toggle.classList.add('collapsed');
+            }
+        };
         let initialAgentCount = 100;
         let activityLog = [];
         let raycaster = new THREE.Raycaster();
@@ -1191,6 +1522,7 @@
                     updateMarkets(data.markets || []);
                     updateBuildings(data.buildings || []);
                     updateCurrencyInfo(data.currency_info || {});
+                    updateTotalResources(data.agents || [], data.buildings || [], data.markets || []);
                 } else {
                     console.warn('Invalid data received:', data);
                     updateConnectionStatus(false);
@@ -1520,6 +1852,16 @@
                     
                     // Store updated data for tooltip
                     agent.agentData = agentInfo;
+                    
+                    // Check for harvest activity and show floating indicator
+                    if (agentInfo.just_harvested) {
+                        showHarvestIndicator(agent, agentInfo.just_harvested);
+                    }
+                    
+                    // Show transaction indicator if just bought/sold
+                    if (agentInfo.just_transacted) {
+                        showTransactionIndicator(agent, agentInfo.just_transacted);
+                    }
                 }
             });
             
@@ -1836,6 +2178,10 @@
                         mesh: marketGroup,
                         data: marketInfo
                     });
+                } else {
+                    // Update existing market data (especially inventory!)
+                    const existingMarket = markets.get(marketInfo.id);
+                    existingMarket.data = marketInfo;
                 }
             });
             
@@ -1850,10 +2196,7 @@
         
         // Update buildings in the scene
         function updateBuildings(buildingData) {
-            console.log('🏗️ updateBuildings called with', buildingData.length, 'buildings');
-            if (buildingData.length > 0) {
-                console.log('First building:', buildingData[0]);
-            }
+            // Removed spam logs for debugging
             
             try {
                 const currentBuildingIds = new Set();
@@ -1964,12 +2307,13 @@
                     nameSprite.position.y = buildingHeight + 4.5;
                     buildingGroup.add(nameSprite);
                     
-                    // Collision box for hovering
+                    // Collision box for hovering AND clicking
                     const collisionBox = new THREE.Mesh(
                         new THREE.BoxGeometry(12, buildingHeight + 2, 12),
                         new THREE.MeshBasicMaterial({ visible: false })
                     );
                     collisionBox.position.y = (buildingHeight + 2) / 2;
+                    collisionBox.userData.isCollisionBox = true; // ← CRITICAL: Mark for raycasting!
                     buildingGroup.add(collisionBox);
                     
                     buildingGroup.position.set(buildingInfo.x, buildingInfo.y, buildingInfo.z);
@@ -1982,8 +2326,15 @@
                     
                     console.log(`🏗️ Building created: ${buildingInfo.name} (${Math.floor(buildingInfo.construction_progress * 100)}% complete) at (${buildingInfo.x.toFixed(1)}, ${buildingInfo.z.toFixed(1)})`);
                 } else {
-                    // Update existing building (mainly for construction progress)
-                    if (buildingInfo.construction_progress !== existing.data.construction_progress) {
+                    // Update existing building data (inventory, fund, progress, etc.)
+                    // IMPORTANT: Save old progress BEFORE updating!
+                    const oldProgress = existing.data.construction_progress;
+                    existing.data = buildingInfo;
+                    
+                    // If progress changed, recreate visual (removes/adds scaffolding)
+                    if (buildingInfo.construction_progress !== oldProgress) {
+                        console.log(`🏗️ Building ${buildingInfo.name} progress: ${(oldProgress * 100).toFixed(0)}% → ${(buildingInfo.construction_progress * 100).toFixed(0)}%`);
+                        
                         // Remove old building and recreate to show updated progress
                         scene.remove(existing.mesh);
                         buildings.delete(buildingInfo.id);
@@ -1992,7 +2343,7 @@
                         currentBuildingIds.delete(buildingInfo.id);
                         
                         if (buildingInfo.construction_progress >= 1.0) {
-                            console.log(`✅ Building completed: ${buildingInfo.name}`);
+                            console.log(`✅ Building completed: ${buildingInfo.name} - Scaffolding removed!`);
                         }
                     }
                 }
@@ -2006,8 +2357,7 @@
                 }
             });
             
-                // Debug: Log building count
-                console.log(`📊 Buildings in scene: ${buildings.size} (received ${buildingData.length} from API)`);
+                // Removed spam log for debugging
             } catch (error) {
                 console.error('❌ Error in updateBuildings:', error);
                 console.error('Stack:', error.stack);
@@ -2022,6 +2372,73 @@
                 document.getElementById('currency-power').textContent = (currencyInfo.purchasing_power * 100).toFixed(1) + '%';
                 document.getElementById('currency-transactions').textContent = currencyInfo.transaction_count || 0;
             }
+        }
+        
+        // Update total resources across all inventories
+        function updateTotalResources(agents, buildings, markets) {
+            let totalWood = 0;
+            let totalStone = 0;
+            let totalFood = 0;
+            let totalIron = 0;
+            
+            let agentTotal = 0;
+            let buildingTotal = 0;
+            let marketTotal = 0;
+            
+            // Sum agent inventories
+            agents.forEach(agent => {
+                const wood = agent.inventory_wood || 0;
+                const stone = agent.inventory_stone || 0;
+                const food = agent.inventory_food || 0;
+                const iron = agent.inventory_iron || 0;
+                
+                totalWood += wood;
+                totalStone += stone;
+                totalFood += food;
+                totalIron += iron;
+                
+                agentTotal += wood + stone + food + iron;
+            });
+            
+            // Sum building storage
+            buildings.forEach(building => {
+                const wood = building.storage_wood || 0;
+                const stone = building.storage_stone || 0;
+                const food = building.storage_food || 0;
+                const iron = building.storage_iron || 0;
+                
+                totalWood += wood;
+                totalStone += stone;
+                totalFood += food;
+                totalIron += iron;
+                
+                buildingTotal += wood + stone + food + iron;
+            });
+            
+            // Sum market inventories
+            markets.forEach(market => {
+                const wood = market.inventory_wood || 0;
+                const stone = market.inventory_stone || 0;
+                const food = market.inventory_food || 0;
+                const iron = market.inventory_iron || 0;
+                
+                totalWood += wood;
+                totalStone += stone;
+                totalFood += food;
+                totalIron += iron;
+                
+                marketTotal += wood + stone + food + iron;
+            });
+            
+            // Update UI
+            document.getElementById('total-wood').textContent = totalWood;
+            document.getElementById('total-stone').textContent = totalStone;
+            document.getElementById('total-food').textContent = totalFood;
+            document.getElementById('total-iron').textContent = totalIron;
+            
+            document.getElementById('agent-inventory-total').textContent = agentTotal;
+            document.getElementById('building-inventory-total').textContent = buildingTotal;
+            document.getElementById('market-inventory-total').textContent = marketTotal;
         }
         
         // Update economy dashboard with comprehensive data
@@ -2318,11 +2735,295 @@
                 }
             }
             
+            // Check for building intersections
+            const buildingMeshes = Array.from(buildings.values()).map(b => b.mesh);
+            const buildingIntersects = raycaster.intersectObjects(buildingMeshes, true);
+            
+            if (buildingIntersects.length > 0) {
+                const hoveredMesh = buildingIntersects[0].object.parent || buildingIntersects[0].object;
+                
+                // Find which building this mesh belongs to
+                for (const [id, building] of buildings) {
+                    if (building.mesh === hoveredMesh) {
+                        showBuildingTooltip(building, event.clientX, event.clientY);
+                        return;
+                    }
+                }
+            }
+            
             hideTooltip();
         }
         
+        let selectedBuilding = null;
+        let highlightedAgents = new Set();
+        
         function onClick(event) {
-            // Could add click interactions here
+            console.log(`🖱️ Click detected at (${event.clientX}, ${event.clientY})`);
+            
+            // Calculate mouse position in normalized device coordinates
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            
+            // Check for building clicks
+            const buildingMeshes = [];
+            buildings.forEach(building => {
+                if (building.mesh && building.mesh.children) {
+                    // Add collision box for raycast
+                    building.mesh.children.forEach(child => {
+                        if (child.userData && child.userData.isCollisionBox) {
+                            buildingMeshes.push({ mesh: child, building: building });
+                        }
+                    });
+                }
+            });
+            
+            console.log(`  Found ${buildings.size} buildings, ${buildingMeshes.length} collision boxes`);
+            
+            const buildingIntersects = raycaster.intersectObjects(buildingMeshes.map(b => b.mesh));
+            
+            console.log(`  Raycaster found ${buildingIntersects.length} building intersections`);
+            
+            if (buildingIntersects.length > 0) {
+                // Find which building was clicked
+                const clickedMesh = buildingIntersects[0].object;
+                const clickedBuildingData = buildingMeshes.find(b => b.mesh === clickedMesh);
+                
+                if (clickedBuildingData) {
+                    console.log(`  ✅ Building clicked: ${clickedBuildingData.building.data.name}`);
+                    selectBuilding(clickedBuildingData.building);
+                    return;
+                }
+            }
+            
+            // If clicking empty space, deselect
+            console.log(`  No building clicked, clearing selection`);
+            clearSelection();
+        }
+        
+        function selectBuilding(building) {
+            try {
+                console.log(`🎯 Selecting building: ${building.data.name} (ID: ${building.data.id})`);
+                
+                // Clear previous selection
+                clearSelection();
+                
+                selectedBuilding = building;
+                
+                // Find all agents assigned to this building
+                const assignedAgents = [];
+                let checkedAgents = 0;
+                let matchedAgents = 0;
+                
+                agents.forEach(agent => {
+                    const agentData = agent.agentData || {};
+                    checkedAgents++;
+                    
+                    // Debug first few agents
+                    if (checkedAgents <= 3) {
+                        console.log(`  Agent ${agent.name}: target_building_id=${agentData.target_building_id}, job=${agentData.job}, state=${agentData.state}`);
+                    }
+                    
+                    // Check if agent is carrying resources for this building
+                    if (agentData.target_building_id === building.data.id) {
+                        console.log(`  ✅ MATCH: ${agent.name} is assigned to this building!`);
+                        assignedAgents.push(agent);
+                        highlightedAgents.add(agent.name);
+                        matchedAgents++;
+                    }
+                });
+                
+                console.log(`  Checked ${checkedAgents} agents, found ${matchedAgents} matches`);
+                console.log(`  About to highlight ${assignedAgents.length} agents...`);
+                
+                // Add visual highlights to assigned agents
+                console.log(`  Highlighting ${assignedAgents.length} agents...`);
+                assignedAgents.forEach(agent => {
+                    // Add a selection ring around the agent
+                    const ringGeometry = new THREE.RingGeometry(1.5, 1.8, 32);
+                    const ringMaterial = new THREE.MeshBasicMaterial({ 
+                        color: 0xffff00, 
+                        side: THREE.DoubleSide,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                    ring.rotation.x = -Math.PI / 2;
+                    ring.position.y = 0.1;
+                    agent.add(ring);
+                    agent.userData.selectionRing = ring;
+                    
+                    // Make agent glow
+                    if (agent.children[0]) { // Body
+                        agent.children[0].material = agent.children[0].material.clone();
+                        agent.children[0].material.emissive = new THREE.Color(0xffff00);
+                        agent.children[0].material.emissiveIntensity = 0.5;
+                        agent.userData.originalMaterial = agent.children[0].material;
+                    }
+                });
+                
+                // Show selection info panel
+                console.log(`  Calling showBuildingSelectionPanel...`);
+                showBuildingSelectionPanel(building, assignedAgents);
+                
+                console.log(`✅ Selection complete: ${building.data.name} (${assignedAgents.length} builders)`);
+            } catch (error) {
+                console.error(`❌ ERROR in selectBuilding:`, error);
+            }
+        }
+        
+        function clearSelection() {
+            // Remove selection rings and restore materials
+            agents.forEach((agent, agentName) => {
+                // Defensive check: Make sure agent exists
+                if (!agent || !agent.userData) {
+                    console.warn(`⚠️ Invalid agent in clearSelection: ${agentName}`);
+                    return;
+                }
+                
+                if (agent.userData.selectionRing) {
+                    agent.remove(agent.userData.selectionRing);
+                    agent.userData.selectionRing = undefined;
+                }
+                if (agent.userData.originalMaterial && agent.children[0]) {
+                    agent.children[0].material = agent.children[0].material.clone();
+                    agent.children[0].material.emissive = new THREE.Color(0x000000);
+                    agent.children[0].material.emissiveIntensity = 0;
+                }
+            });
+            
+            highlightedAgents.clear();
+            selectedBuilding = null;
+            
+            // Hide selection panel
+            const panel = document.getElementById('building-selection-panel');
+            if (panel) {
+                panel.style.display = 'none';
+            }
+        }
+        
+        function showBuildingSelectionPanel(building, assignedAgents) {
+            console.log(`📋 showBuildingSelectionPanel called for ${building.data.name}, ${assignedAgents.length} agents`);
+            
+            let panel = document.getElementById('building-selection-panel');
+            if (!panel) {
+                console.log(`  Creating new panel element...`);
+                panel = document.createElement('div');
+                panel.id = 'building-selection-panel';
+                panel.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(20, 20, 30, 0.95);
+                    border: 2px solid #ffd700;
+                    border-radius: 10px;
+                    padding: 20px;
+                    min-width: 400px;
+                    max-width: 600px;
+                    max-height: 70vh;
+                    overflow-y: auto;
+                    z-index: 10000;
+                    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+                `;
+                document.body.appendChild(panel);
+                console.log(`  Panel created and appended to body`);
+            } else {
+                console.log(`  Panel already exists, reusing...`);
+            }
+            
+            const buildingData = building.data;
+            const remaining = {};
+            if (buildingData.required_wood > 0) {
+                const delivered = buildingData.current_wood || 0;
+                if (delivered < buildingData.required_wood) {
+                    remaining['🌲 Wood'] = `${delivered}/${buildingData.required_wood}`;
+                }
+            }
+            if (buildingData.required_stone > 0) {
+                const delivered = buildingData.current_stone || 0;
+                if (delivered < buildingData.required_stone) {
+                    remaining['🪨 Stone'] = `${delivered}/${buildingData.required_stone}`;
+                }
+            }
+            if (buildingData.required_iron > 0) {
+                const delivered = buildingData.current_iron || 0;
+                if (delivered < buildingData.required_iron) {
+                    remaining['⚙️ Iron'] = `${delivered}/${buildingData.required_iron}`;
+                }
+            }
+            
+            panel.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0; color: #ffd700;">🏗️ ${buildingData.name}</h3>
+                    <button onclick="clearSelection()" style="background: #c0392b; border: none; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 18px;">✕</button>
+                </div>
+                
+                <div style="margin-bottom: 15px; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 5px;">
+                    <div style="color: #3498db; font-size: 14px; margin-bottom: 5px;">Construction Progress</div>
+                    <div style="background: #2c3e50; height: 20px; border-radius: 10px; overflow: hidden;">
+                        <div style="background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; width: ${(buildingData.construction_progress * 100).toFixed(1)}%; transition: width 0.3s;"></div>
+                    </div>
+                    <div style="text-align: center; color: #ecf0f1; margin-top: 5px; font-weight: bold;">${(buildingData.construction_progress * 100).toFixed(1)}%</div>
+                </div>
+                
+                ${Object.keys(remaining).length > 0 ? `
+                <div style="margin-bottom: 15px; padding: 10px; background: rgba(231, 76, 60, 0.1); border-left: 3px solid #e74c3c; border-radius: 5px;">
+                    <div style="color: #e74c3c; font-weight: bold; margin-bottom: 8px;">⚠️ Resources Needed:</div>
+                    ${Object.entries(remaining).map(([resource, amount]) => 
+                        `<div style="padding: 3px 0; color: #ecf0f1;">${resource}: ${amount}</div>`
+                    ).join('')}
+                </div>
+                ` : '<div style="color: #27ae60; font-weight: bold; margin-bottom: 15px;">✅ All resources delivered!</div>'}
+                
+                <div style="padding: 10px; background: rgba(52, 152, 219, 0.1); border-left: 3px solid #3498db; border-radius: 5px;">
+                    <div style="color: #3498db; font-weight: bold; margin-bottom: 8px;">👷 Assigned Builders (${assignedAgents.length})</div>
+                    ${assignedAgents.length > 0 ? `
+                        <div style="display: grid; gap: 8px;">
+                            ${assignedAgents.map(agent => {
+                                const agentData = agent.agentData || {};
+                                const carrying = [];
+                                if (agentData.carrying_wood > 0) carrying.push(`🌲${agentData.carrying_wood}`);
+                                if (agentData.carrying_stone > 0) carrying.push(`🪨${agentData.carrying_stone}`);
+                                if (agentData.carrying_iron > 0) carrying.push(`⚙️${agentData.carrying_iron}`);
+                                
+                                return `
+                                    <div style="padding: 8px; background: rgba(255, 255, 255, 0.05); border-radius: 5px; border: 1px solid rgba(255, 215, 0, 0.3);">
+                                        <div style="color: #f39c12; font-weight: bold;">${agent.name}</div>
+                                        <div style="color: #bdc3c7; font-size: 12px; margin-top: 3px;">
+                                            ${agentData.job || 'Builder'} - ${agentData.state || 'Working'}
+                                        </div>
+                                        ${carrying.length > 0 ? `
+                                            <div style="color: #2ecc71; font-size: 12px; margin-top: 3px;">
+                                                🚚 Carrying: ${carrying.join(' ')}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    ` : '<div style="color: #95a5a6; font-style: italic;">No builders currently assigned</div>'}
+                </div>
+                
+                ${buildingData.construction_progress < 1.0 ? `
+                <div style="margin-top: 15px; padding: 10px; background: rgba(241, 196, 15, 0.1); border-left: 3px solid #f1c40f; border-radius: 5px;">
+                    <div style="color: #f1c40f; font-size: 12px;">💰 Construction Fund: ${(buildingData.construction_fund || 0).toFixed(1)} gold</div>
+                </div>
+                ` : ''}
+                
+                <div style="margin-top: 15px; text-align: center; color: #95a5a6; font-size: 12px;">
+                    Click elsewhere to deselect
+                </div>
+            `;
+            
+            console.log(`  Setting panel innerHTML (${panel.innerHTML.length} chars)...`);
+            console.log(`  Setting panel display to 'block'...`);
+            panel.style.display = 'block';
+            console.log(`  Panel element:`, panel);
+            console.log(`  Panel computed style:`, window.getComputedStyle(panel).display);
+            console.log(`  ✅ Panel should now be visible! Check if it's on screen.`);
         }
         
         // Show tooltip for agent
@@ -2352,6 +3053,25 @@
                 <div class="tooltip-row">
                     <span class="tooltip-label">Leader:</span>
                     <span class="tooltip-value">👑 Following</span>
+                </div>
+                ` : ''}
+                <div class="tooltip-row">
+                    <span class="tooltip-label">💰 Wallet:</span>
+                    <span class="tooltip-value">${(data.wallet || 0).toFixed(1)}</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">📦 Inventory:</span>
+                    <span class="tooltip-value">
+                        🌲${data.inventory_wood || 0} 🪨${data.inventory_stone || 0} 
+                        🌾${data.inventory_food || 0} ⚙️${data.inventory_iron || 0}
+                    </span>
+                </div>
+                ${(data.carrying_wood > 0 || data.carrying_stone > 0 || data.carrying_iron > 0) ? `
+                <div class="tooltip-row">
+                    <span class="tooltip-label">🚚 Carrying:</span>
+                    <span class="tooltip-value" style="color: #f39c12;">
+                        🌲${data.carrying_wood || 0} 🪨${data.carrying_stone || 0} ⚙️${data.carrying_iron || 0}
+                    </span>
                 </div>
                 ` : ''}
                 <div class="tooltip-row">
@@ -2408,6 +3128,71 @@
         }
         
         // Show tooltip for market
+        function showBuildingTooltip(building, x, y) {
+            const tooltip = document.getElementById('tooltip');
+            const data = building.data || {};
+            
+            const progressPercent = Math.floor((data.construction_progress || 0) * 100);
+            const isComplete = progressPercent >= 100;
+            
+            tooltip.innerHTML = `
+                <h4>🏗️ ${data.name || 'Building'}</h4>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Type:</span>
+                    <span class="tooltip-value">${data.building_type || 'Unknown'}</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Owner:</span>
+                    <span class="tooltip-value">${data.owner || 'Unknown'}</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Progress:</span>
+                    <span class="tooltip-value" style="color: ${isComplete ? '#2ecc71' : '#f39c12'};">
+                        ${progressPercent}%
+                    </span>
+                </div>
+                ${!isComplete ? `
+                <div class="tooltip-row">
+                    <span class="tooltip-label">💰 Construction Fund:</span>
+                    <span class="tooltip-value" style="color: #ffd700;">
+                        ${Math.round(data.construction_fund || 0)} gold
+                    </span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">📦 Needs:</span>
+                    <span class="tooltip-value">
+                        🌲${data.required_wood || 0} 🪨${data.required_stone || 0} ⚙️${data.required_iron || 0}
+                    </span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">📥 Delivered:</span>
+                    <span class="tooltip-value" style="color: #4ecdc4;">
+                        🌲${data.current_wood || 0}/${data.required_wood || 0} 
+                        🪨${data.current_stone || 0}/${data.required_stone || 0} 
+                        ⚙️${data.current_iron || 0}/${data.required_iron || 0}
+                    </span>
+                </div>
+                ` : ''}
+                ${(data.storage_wood > 0 || data.storage_stone > 0 || data.storage_food > 0 || data.storage_iron > 0) ? `
+                <div class="tooltip-row">
+                    <span class="tooltip-label">🏪 Storage:</span>
+                    <span class="tooltip-value">
+                        🌲${data.storage_wood || 0} 🪨${data.storage_stone || 0} 
+                        🌾${data.storage_food || 0} ⚙️${data.storage_iron || 0}
+                    </span>
+                </div>
+                ` : ''}
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Position:</span>
+                    <span class="tooltip-value">${data.x?.toFixed(1) || 0}, ${data.z?.toFixed(1) || 0}</span>
+                </div>
+            `;
+            
+            tooltip.style.left = (x + 15) + 'px';
+            tooltip.style.top = (y + 15) + 'px';
+            tooltip.style.display = 'block';
+        }
+        
         function showMarketTooltip(market, x, y) {
             const tooltip = document.getElementById('tooltip');
             const data = market.data || {};
@@ -2437,6 +3222,25 @@
                 <div class="tooltip-row">
                     <span class="tooltip-label">Reputation:</span>
                     <span class="tooltip-value">${(data.reputation || 50).toFixed(1)}/100</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label"><strong>📦 Inventory:</strong></span>
+                </div>
+                <div class="tooltip-row" style="padding-left: 10px;">
+                    <span class="tooltip-label">🪵 Wood:</span>
+                    <span class="tooltip-value">${data.inventory_wood || 0}</span>
+                </div>
+                <div class="tooltip-row" style="padding-left: 10px;">
+                    <span class="tooltip-label">🪨 Stone:</span>
+                    <span class="tooltip-value">${data.inventory_stone || 0}</span>
+                </div>
+                <div class="tooltip-row" style="padding-left: 10px;">
+                    <span class="tooltip-label">🌾 Food:</span>
+                    <span class="tooltip-value">${data.inventory_food || 0}</span>
+                </div>
+                <div class="tooltip-row" style="padding-left: 10px;">
+                    <span class="tooltip-label">⛏️ Iron:</span>
+                    <span class="tooltip-value">${data.inventory_iron || 0}</span>
                 </div>
                 <div class="tooltip-row">
                     <span class="tooltip-label">Position:</span>
@@ -3135,6 +3939,148 @@
                 }
             };
             animateParticles();
+        }
+        
+        // Show floating harvest indicator above agent
+        function showHarvestIndicator(agent, harvestData) {
+            const [resourceType, amount] = harvestData;
+            
+            // Resource icons and colors
+            const resourceIcons = {
+                'wood': { icon: '🌲', color: '#8b4513' },
+                'stone': { icon: '🪨', color: '#a0a0a0' },
+                'food': { icon: '🌾', color: '#f1c40f' },
+                'iron': { icon: '⚙️', color: '#7f8c8d' },
+                'gold': { icon: '💰', color: '#ffd700' },
+                'water': { icon: '💧', color: '#3498db' },
+                'cloth': { icon: '🧵', color: '#e67e22' },
+                'tool': { icon: '🔨', color: '#95a5a6' },
+                'weapon': { icon: '⚔️', color: '#e74c3c' },
+                'coin': { icon: '🪙', color: '#f39c12' }
+            };
+            
+            const resource = resourceIcons[resourceType] || { icon: '📦', color: '#4ecdc4' };
+            
+            // Create canvas for text
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw resource icon
+            ctx.font = 'bold 60px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(resource.icon, 128, 50);
+            
+            // Draw amount text (+X)
+            ctx.font = 'bold 40px Arial';
+            ctx.fillStyle = resource.color;
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 4;
+            ctx.strokeText(`+${amount}`, 128, 100);
+            ctx.fillText(`+${amount}`, 128, 100);
+            
+            // Create sprite
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ 
+                map: texture, 
+                transparent: true,
+                depthTest: false
+            });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(2, 1, 1);
+            
+            // Position above agent's head
+            const startPos = agent.mesh.position.clone();
+            startPos.y += 3.5; // Start above head
+            sprite.position.copy(startPos);
+            
+            scene.add(sprite);
+            
+            // Animate: float up and fade out
+            let life = 0;
+            const animateHarvestIndicator = () => {
+                life += 0.02;
+                sprite.position.y += 0.03; // Float upward
+                spriteMaterial.opacity = 1.0 - life;
+                
+                if (life < 1.0) {
+                    requestAnimationFrame(animateHarvestIndicator);
+                } else {
+                    scene.remove(sprite);
+                    texture.dispose();
+                    spriteMaterial.dispose();
+                }
+            };
+            animateHarvestIndicator();
+        }
+        
+        // Show transaction indicator (gold earned/spent)
+        function showTransactionIndicator(agent, transactionData) {
+            const [transactionType, goldAmount] = transactionData;
+            
+            // Transaction types: "Sold" (earned gold) or "Bought" (spent gold)
+            const isSold = transactionType === 'Sold';
+            const icon = '🪙'; // Gold coin
+            const color = isSold ? '#2ecc71' : '#e74c3c'; // Green for earning, red for spending
+            const prefix = isSold ? '+' : '-';
+            
+            // Create canvas for text
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw gold coin icon
+            ctx.font = 'bold 60px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(icon, 128, 50);
+            
+            // Draw amount text (+/-X)
+            ctx.font = 'bold 40px Arial';
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 4;
+            const displayText = `${prefix}${Math.round(goldAmount)}`;
+            ctx.strokeText(displayText, 128, 100);
+            ctx.fillText(displayText, 128, 100);
+            
+            // Create sprite
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ 
+                map: texture, 
+                transparent: true,
+                depthTest: false
+            });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(2, 1, 1);
+            
+            // Position above agent's head (slightly offset from harvest indicator)
+            const startPos = agent.mesh.position.clone();
+            startPos.y += 3.5; // Start above head
+            startPos.x += 0.5; // Slight offset to avoid overlap with harvest indicators
+            sprite.position.copy(startPos);
+            
+            scene.add(sprite);
+            
+            // Animate: float up and fade out
+            let life = 0;
+            const animateTransactionIndicator = () => {
+                life += 0.02;
+                sprite.position.y += 0.03; // Float upward
+                spriteMaterial.opacity = 1.0 - life;
+                
+                if (life < 1.0) {
+                    requestAnimationFrame(animateTransactionIndicator);
+                } else {
+                    scene.remove(sprite);
+                    texture.dispose();
+                    spriteMaterial.dispose();
+                }
+            };
+            animateTransactionIndicator();
         }
         
         // Create headstone/grave marker at death location

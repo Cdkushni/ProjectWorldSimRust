@@ -89,6 +89,32 @@ impl ResourceManager {
             None
         }
     }
+    
+    /// Regenerate resources (natural growth)
+    pub fn regenerate(&self) {
+        let mut nodes = self.nodes.write();
+        for node in nodes.iter_mut() {
+            // Regenerate based on node type
+            let max_quantity = match node.resource_type {
+                ResourceNodeType::Tree => 200,
+                ResourceNodeType::Rock => 150,
+                ResourceNodeType::Farm => 300,
+                ResourceNodeType::IronDeposit => 100,
+            };
+            
+            // If node is depleted or low, regenerate quickly
+            if node.quantity < max_quantity {
+                let regen_rate = match node.resource_type {
+                    ResourceNodeType::Tree => 5,      // Trees grow fast
+                    ResourceNodeType::Rock => 2,      // Stone regenerates slowly
+                    ResourceNodeType::Farm => 10,     // Farms produce quickly
+                    ResourceNodeType::IronDeposit => 3, // Iron moderate
+                };
+                
+                node.quantity = (node.quantity + regen_rate).min(max_quantity);
+            }
+        }
+    }
 
     /// Generate random resource nodes
     pub fn generate_random_nodes(&self, count: usize, world_size: f32) {

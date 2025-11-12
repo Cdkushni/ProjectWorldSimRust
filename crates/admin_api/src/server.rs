@@ -51,6 +51,10 @@ pub struct MarketState {
     pub z: f32,
     pub transaction_count: u64,
     pub reputation: f32,
+    pub inventory_wood: u32,
+    pub inventory_stone: u32,
+    pub inventory_food: u32,
+    pub inventory_iron: u32,
 }
 
 /// Building state for visualization
@@ -65,6 +69,17 @@ pub struct BuildingState {
     pub construction_progress: f32,
     pub health: f32,
     pub owner: String,
+    pub storage_wood: u32,
+    pub storage_stone: u32,
+    pub storage_food: u32,
+    pub storage_iron: u32,
+    pub required_wood: u32,
+    pub required_stone: u32,
+    pub required_iron: u32,
+    pub current_wood: u32,
+    pub current_stone: u32,
+    pub current_iron: u32,
+    pub construction_fund: f64, // Gold allocated for buying materials
 }
 
 /// Currency information for visualization
@@ -88,6 +103,17 @@ pub struct AgentState {
     pub faction: Option<String>,
     pub social_class: String,
     pub leader_id: Option<String>,
+    pub wallet: f64,
+    pub inventory_wood: u32,
+    pub inventory_stone: u32,
+    pub inventory_food: u32,
+    pub inventory_iron: u32,
+    pub carrying_wood: u32,
+    pub carrying_stone: u32,
+    pub carrying_iron: u32,
+    pub target_building_id: Option<String>, // Building this agent is working on
+    pub just_harvested: Option<(String, u32)>, // (resource_type, amount)
+    pub just_transacted: Option<(String, f64)>, // (transaction_type: "Sold"/"Bought", gold_amount)
 }
 
 /// Admin API server
